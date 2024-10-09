@@ -30,8 +30,6 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-AUTH_USER_MODEL = 'authentication.WWCUser'
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,6 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
 ]
+
+AUTH_USER_MODEL = 'authentication.WWCUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
