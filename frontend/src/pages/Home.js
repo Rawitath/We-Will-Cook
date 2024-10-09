@@ -6,7 +6,7 @@ export default function Home(){
         <div className='headdiv'>
             <h1 className='headtext'>This is Home Page</h1>
         </div>
-        <p>We Will Cook!</p>
+        <p>We Will Cook! Test</p>
         </>
     )
 }
