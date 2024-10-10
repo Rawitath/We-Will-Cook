@@ -17,6 +17,10 @@ class WWCUserManager(UserManager):
             raise ValueError("User must have an email!")
         if not password:
             raise ValueError("User must have a password!")
+        if len(password) < 8 or not any(char.isupper() for char in password) \
+           or not any(char.islower() for char in password) or not any(char.isdigit() for char in password):
+            raise ValueError("ใส่ข้อความตรงนี้")
+
         return super().create_user(username, email, password, **extra_fields)
     def create_superuser(self, username: str, email: str, password: str, **extra_fields: Any) -> Any:
         if not username:
@@ -25,6 +29,9 @@ class WWCUserManager(UserManager):
             raise ValueError("User must have an email!")
         if not password:
             raise ValueError("User must have a password!")
+        if len(password) < 8 or not any(char.isupper() for char in password) \
+           or not any(char.islower() for char in password) or not any(char.isdigit() for char in password):
+            raise ValueError("ใส่ข้อความตรงนี้")
         return super().create_superuser(username, email, password, **extra_fields)
 
 # Create your models here.
