@@ -3,7 +3,7 @@ from django.db import models
 import uuid
 from django.contrib.auth.models import AbstractUser, UserManager
 
-def get_user_pfp_path(self):
+def get_user_pfp_path(self, filename):
     return f"media/{self.userid}/pfp.png"
 
 def get_default_pfp():
