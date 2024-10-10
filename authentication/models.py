@@ -19,7 +19,7 @@ class WWCUserManager(UserManager):
             raise ValueError("User must have a password!")
         if len(password) < 8 or not any(char.isupper() for char in password) \
            or not any(char.islower() for char in password) or not any(char.isdigit() for char in password):
-            raise ValueError("ใส่ข้อความตรงนี้")
+            raise ValueError("The password requires at least 8 characters long with at least 1 lowercase and uppercase and number")
 
         return super().create_user(username, email, password, **extra_fields)
     def create_superuser(self, username: str, email: str, password: str, **extra_fields: Any) -> Any:
@@ -31,7 +31,7 @@ class WWCUserManager(UserManager):
             raise ValueError("User must have a password!")
         if len(password) < 8 or not any(char.isupper() for char in password) \
            or not any(char.islower() for char in password) or not any(char.isdigit() for char in password):
-            raise ValueError("ใส่ข้อความตรงนี้")
+            raise ValueError("The password requires at least 8 characters long with at least 1 lowercase and uppercase and number")
         return super().create_superuser(username, email, password, **extra_fields)
 
 # Create your models here.
