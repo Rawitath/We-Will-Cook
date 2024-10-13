@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'authentication.WWCUser'
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -59,7 +60,11 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': [
     'rest_framework.permissions.AllowAny']}
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST =[
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+]
 
 ROOT_URLCONF = 'wewillcook.urls'
 
