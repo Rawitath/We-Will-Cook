@@ -1,7 +1,6 @@
 from typing import Any
 from django.db import models
 import uuid
-from django.core.exceptions import ValidationError
 from django.apps import apps
 from django.contrib import auth
 from django.contrib.auth.models import AbstractUser, BaseUserManager
@@ -15,7 +14,7 @@ def get_default_pfp():
 
 class WWCUserManager(BaseUserManager):
     use_in_migrations = True
-    def _create(self, userid, username, email, password, profile_pic, **extra_fields):
+    def _create(self, username, email, password, **extra_fields):
         email = self.normalize_email(email)
         GlobalUserModel = apps.get_model(
             self.model._meta.app_label, self.model._meta.object_name
@@ -26,12 +25,12 @@ class WWCUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email, password, profile_pic, **extra_fields):
+    def create_user(self, username, email, password, **extra_fields):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
-        return self._create(username, email, password, profile_pic, **extra_fields)
+        return self._create(username, email, password, **extra_fields)
 
-    def create_superuser(self, username, email, password, profile_pic, **extra_fields):
+    def create_superuser(self, username, email, password, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -40,7 +39,7 @@ class WWCUserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self._create(username, email, password,profile_pic , **extra_fields)
+        return self._create(username, email, password, **extra_fields)
 
     def with_perm(
         self, perm, is_active=True, include_superusers=True, backend=None, obj=None

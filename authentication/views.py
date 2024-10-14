@@ -1,7 +1,5 @@
 from django.shortcuts import render
 from django.contrib.auth import login, logout
-from django.contrib.auth import authenticate
-from django.contrib import messages
 
 from rest_framework import permissions, status
 from rest_framework.authentication import SessionAuthentication
@@ -16,12 +14,13 @@ class WWCRegisterView(APIView):
     permission_classes = (permissions.AllowAny,)
     def post(self, request):
         validated_data = validate(request.data)
-        serializer = WWCRegisterSerializer(data=validated_data)
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.create(validated_data)
-            if user:
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        if validated_data == request.data:
+            serializer = WWCRegisterSerializer(data=validated_data)
+            if serializer.is_valid(raise_exception=True):
+                user = serializer.create(validated_data)
+                if user:
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(validated_data, status=status.HTTP_400_BAD_REQUEST)
     
 class WWCLoginView(APIView):
     permission_classes = (permissions.AllowAny,)

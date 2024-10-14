@@ -9,11 +9,9 @@ class WWCRegisterSerializer(serializers.ModelSerializer):
         fields = ['userid', 'username', 'email', 'password', 'profile_pic']
     def create(self, validated_data):
         user = UserModel.objects.create_user(
-            userid=validated_data['userid'],
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password'],
-            profile_pic=validated_data['profile_pic']
+            password=validated_data['password']
         )
         user.save()
         return user
@@ -31,4 +29,4 @@ class WWCLoginSerializer(serializers.Serializer):
 class WWCUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
-        fields = ['userid', 'username', 'email']
+        fields = ['userid', 'username', 'email', 'profile_pic']
