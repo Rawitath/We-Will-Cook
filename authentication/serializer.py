@@ -3,7 +3,6 @@ from .models import *
 from django.contrib.auth import get_user_model, authenticate
 from django.core.exceptions import ValidationError
 UserModel = get_user_model()
-
 class WWCRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
@@ -27,7 +26,7 @@ class WWCLoginSerializer(serializers.Serializer):
             password=validated_data['password']
         )
         if not user:
-            raise ValidationError('User not found.')
+            return None
         return user
 class WWCUserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,10 +1,11 @@
 from typing import Any
 from django.db import models
 import uuid
-from django.contrib.auth.hashers import make_password
-from django.contrib import auth
+from django.core.exceptions import ValidationError
 from django.apps import apps
+from django.contrib import auth
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.hashers import make_password
 
 def get_user_pfp_path(self, filename):
     return f"media/{self.userid}/pfp.png"
@@ -68,13 +69,6 @@ class WWCUserManager(BaseUserManager):
             )
         return self.none()
 
-# class WWCUserManager(UserManager):
-#     def create_user(self, username: str, email: str, password: str, **extra_fields: Any) -> Any:
-#         return super().create_user(username, email, password, **extra_fields)
-#     def create_superuser(self, username: str, email: str, password: str, **extra_fields: Any) -> Any:
-#         return super().create_superuser(username, email, password, **extra_fields)
-
-# Create your models here.
 class WWCUser(AbstractUser):
     objects = WWCUserManager()
     userid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

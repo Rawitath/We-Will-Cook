@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'api',
     'authentication',
     'rest_framework',
-    'corsheaders',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [

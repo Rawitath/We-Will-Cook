@@ -30,8 +30,10 @@ class WWCLoginView(APIView):
         serializer = WWCLoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.auth(request.data)
-            login(request, user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            if user:
+                login(request, user)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"Username or password is wrong."}, status=status.HTTP_401_UNAUTHORIZED)
         
 class WWCLogoutView(APIView):
     def post(self, request):
