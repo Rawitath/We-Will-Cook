@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth import get_user_model, authenticate
-
+from django.core.exceptions import ValidationError
 UserModel = get_user_model()
 
 class WWCRegisterSerializer(serializers.ModelSerializer):
@@ -18,10 +18,9 @@ class WWCRegisterSerializer(serializers.ModelSerializer):
         )
         user.save()
         return user
-class WWCLoginSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserModel
-        fields = ['username', 'password']
+class WWCLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
     def auth(self, validated_data):
         user = authenticate(
             username=validated_data['username'],
