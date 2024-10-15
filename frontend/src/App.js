@@ -6,31 +6,36 @@ import axios from 'axios';
 const api_url = 'http://127.0.0.1:8000/authentication/';
 
 function App() {
-  const [post, setPost] = useState(null);
+  const [currentUser, setCurrentUser] = useState();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loguser, setLoguser] = useState('');
+  const [logpass, setLogpass] = useState('');
   useEffect(() => {
     axios.get(api_url).then((response) =>{
-      setPost(response.data);
-    })
+      setCurrentUser(response.data);
+      console.log(response.data);
+    });
   }, []);
 
-  function CreatePost(){
-    
-  }
-
-  function Register(){
-    axios.post(api_url,{
-      'username': username,
-      'email': email,
-      'password': password
-    }).then((response) =>{
-      setPost(response.data);
+  function Register(e){
+    axios.post(api_url+'register/',{
+      "username": username,
+      "email": email,
+      "password": password
     });
   }
 
-  if (!post) return null;
+  function Login(){
+    axios.post(api_url+'login/',{
+      "username": loguser,
+      "password": logpass
+    });
+  }
+  function Logout(){
+    axios.post(api_url+'logout/',{});
+  }
 
   return (
     <div className="App">
@@ -51,9 +56,10 @@ function App() {
         <input placeholder='email' value={email} onChange={e => setEmail(e.target.value)}></input>
         <input placeholder='password' type='password' value={password} onChange={e => setPassword(e.target.value)}></input>
         <button onClick={Register}>Create User</button>
-        <input placeholder='username'></input>
-        <input placeholder='password' type='password'></input>
-        <button>Login</button>
+        <input placeholder='username' value={loguser} onChange={e => setLoguser(e.target.value)}></input>
+        <input placeholder='password' type='password' value={logpass} onChange={e => setLogpass(e.target.value)}></input>
+        <button onClick={Login}>Login</button>
+        <button onClick={Logout}>Logout</button>
       </header>
     </div>
   );
