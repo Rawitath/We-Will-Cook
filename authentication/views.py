@@ -31,7 +31,7 @@ class WWCLoginView(APIView):
             user = serializer.auth(request.data)
             if user:
                 login(request, user)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response(request.session, status=status.HTTP_200_OK)
             return Response({"Username or password is wrong."}, status=status.HTTP_401_UNAUTHORIZED)
         
 class WWCLogoutView(APIView):
@@ -44,4 +44,7 @@ class WWCUserView(APIView):
     authentication_classes = (SessionAuthentication,)
     def get(self, request):
         serializer = WWCUserSerializer(request.user)
-        return Response({'current_users': serializer.data}, status=status.HTTP_200_OK)
+        if request.user.is_authenticated:
+            return Response({'current_users': serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({'User is not authenticated.'},status=status.HTTP_401_UNAUTHORIZED)
