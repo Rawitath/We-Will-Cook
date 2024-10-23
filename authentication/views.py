@@ -8,6 +8,9 @@ from rest_framework.response import Response
 from .models import *
 from .serializer import *
 from .validators import *
+
+from django.core.mail import send_mail
+from django.conf import settings
 # Create your views here.
 
 class WWCRegisterView(APIView):
@@ -19,6 +22,12 @@ class WWCRegisterView(APIView):
             if serializer.is_valid(raise_exception=True):
                 user = serializer.create(validated_data)
                 if user:
+                    from_email = settings.EMAIL_HOST_USER
+                    to_email = [user.email]
+                    subject = f"Dear {user.username}, Your Account Has Been Created!"
+                    message = f"Enjoy We Will Cook, {user.username}!"
+                    send_mail(subject, message,
+                          from_email, recipient_list=to_email,fail_silently=False)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(validated_data, status=status.HTTP_400_BAD_REQUEST)
     
