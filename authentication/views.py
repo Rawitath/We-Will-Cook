@@ -57,3 +57,16 @@ class WWCUserView(APIView):
             return Response({'current_users': serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({'User is not authenticated.'},status=status.HTTP_401_UNAUTHORIZED)
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.response import Response
+from .serializer import WWCUserSerializer
+
+class WWCUserView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JWTAuthentication,)
+    
+    def get(self, request):
+        serializer = WWCUserSerializer(request.user)
+        return Response({'current_user': serializer.data}, status=status.HTTP_200_OK)
