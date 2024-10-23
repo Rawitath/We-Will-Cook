@@ -36,8 +36,12 @@ npm install
 สร้างไฟล์ชื่อ .env (ไม่มีชื่อตามด้วยสกุล .env) ในโฟลเดอร์หลัก (We-Will-Cook)<br>
 <br>
 **6. รันคำสั่งตามนี้**<br>
-```python
+ในหน้า Command Prompt<br>
+```console
 python manage.py shell
+```
+Command Prompt จะกลายเป็น Python Shell ให้พิมพ์ตามนี้<br>
+```python
 from django.core.management.utils import get_random_secret_key
 print(get_random_secret_key())
 ```
@@ -45,8 +49,13 @@ print(get_random_secret_key())
 <br>
 **7. เขียนไฟล์ .env ตามนี้**
 ```
-SECRET_KEY='*((คีย์ที่ได้มา))*'
+SECRET_KEY='((คีย์ที่ได้มา))'
 DEBUG=True
+EMAIL_USE_TLS=True
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_HOST_USER='((Gmail สำหรับส่งข้อความ))'
+EMAIL_HOST_PASSWORD='((รหัส App Password))'
+EMAIL_PORT=587
 ```
 **8. รันเซิฟเวอร์ backend ด้วย**
 ไปที่โฟลเดอร์หลัก (We-Will-Cook) และพิมพ์ใน cmd
