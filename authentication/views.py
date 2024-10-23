@@ -2,19 +2,19 @@ from django.shortcuts import render
 from django.contrib.auth import login, logout
 
 from rest_framework import permissions, status
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
 from .serializer import *
 from .validators import *
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from django.core.mail import send_mail
 from django.conf import settings
 # Create your views here.
 
 class WWCRegisterView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = permissions.AllowAny
     def post(self, request):
         validated_data = validate(request.data)
         if validated_data == request.data:
@@ -32,8 +32,8 @@ class WWCRegisterView(APIView):
         return Response(validated_data, status=status.HTTP_400_BAD_REQUEST)
     
 class WWCLoginView(APIView):
-    permission_classes = (permissions.AllowAny,)
-    authentication_classes = (SessionAuthentication,)
+    permission_classes = permissions.AllowAny
+    authentication_classes = JWTAuthentication
     def post(self, request):
         serializer = WWCLoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -44,28 +44,24 @@ class WWCLoginView(APIView):
             return Response({"Username or password is wrong."}, status=status.HTTP_401_UNAUTHORIZED)
         
 class WWCLogoutView(APIView):
+    permission_classes = permissions.IsAuthenticated
     def post(self, request):
         logout(request)
         return Response(status=status.HTTP_200_OK)
 
 class WWCUserView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
+    permission_classes = permissions.IsAuthenticated
+    authentication_classes = JWTAuthentication
     def get(self, request):
         serializer = WWCUserSerializer(request.user)
         if request.user.is_authenticated:
             return Response({'current_users': serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({'User is not authenticated.'},status=status.HTTP_401_UNAUTHORIZED)
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.response import Response
-from .serializer import WWCUserSerializer
 
 class WWCUserView(APIView):
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (JWTAuthentication,)
+    permission_classes = permissions.IsAuthenticated
+    authentication_classes = JWTAuthentication
     
     def get(self, request):
         serializer = WWCUserSerializer(request.user)
