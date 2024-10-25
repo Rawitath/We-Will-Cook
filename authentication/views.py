@@ -20,7 +20,7 @@ class WWCRegisterView(APIView):
         if validated_data == request.data:
             serializer = WWCRegisterSerializer(data=validated_data)
             if serializer.is_valid(raise_exception=True):
-                user = serializer.create(validated_data)
+                user = serializer.create(validated_data, True)
                 if user:
                     from_email = settings.EMAIL_HOST_USER
                     to_email = [user.email]
