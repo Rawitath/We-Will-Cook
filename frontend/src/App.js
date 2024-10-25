@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, X } from 'lucide-react'; // Removed unused Loader2
+import { Search, X, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Define the tastes array that was missing
 const tastes = [
   { label: 'Spicy', emoji: '🌶️' },
   { label: 'Sour', emoji: '🍋' },
@@ -14,7 +13,6 @@ const tastes = [
   { label: 'Creamy', emoji: '🥛' }
 ];
 
-// Language animations and greetings
 const greetings = [
   { text: "สวัสดี User วันนี้คุณจะกินอะไร?", lang: "th" },
   { text: "Hello User, what would you like to eat today?", lang: "en" },
@@ -23,14 +21,13 @@ const greetings = [
   { text: "Bonjour User, que voulez-vous manger aujourd'hui?", lang: "fr" }
 ];
 
-// Shimmer loading effect component
-const ShimmerEffect = () => (
-  <div className="animate-pulse">
-    <div className="h-32 bg-gray-200 rounded-lg mb-4"></div>
-  </div>
-);
+const recentSearches = [
+  { id: 1, title: "Tom Yum Kung" },
+  { id: 2, title: "Green Curry" },
+  { id: 3, title: "Pad Thai" },
+  { id: 4, title: "Som Tum" }
+];
 
-// Enhanced TasteButton with animations
 const TasteButton = ({ label, emoji, active, onClick }) => (
   <motion.button
     whileHover={{ scale: 1.02 }}
@@ -52,117 +49,88 @@ const TasteButton = ({ label, emoji, active, onClick }) => (
   </motion.button>
 );
 
-// Enhanced Recipe Card with animations
-const RecipeCard = ({ recipe, onClick }) => (
+const TypewriterText = ({ text }) => {
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const [typingSpeed, setTypingSpeed] = useState(150);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isDeleting) {
+        if (displayText.length < text.length) {
+          setDisplayText(text.slice(0, displayText.length + 1));
+          setTypingSpeed(150);
+        } else {
+          setIsDeleting(true);
+          setTypingSpeed(100);
+          setTimeout(() => {}, 2000); // Pause before deleting
+        }
+      } else {
+        if (displayText.length > 0) {
+          setDisplayText(text.slice(0, displayText.length - 1));
+          setTypingSpeed(100);
+        } else {
+          setIsDeleting(false);
+          setLoopNum(loopNum + 1);
+        }
+      }
+    }, typingSpeed);
+
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, text]);
+
+  return (
+    <span>{displayText}<span className="animate-pulse">|</span></span>
+  );
+};
+
+const RecentSearchItem = ({ item, onClick }) => (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -20 }}
-    whileHover={{ scale: 1.03, y: -5 }}
-    className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    className="cursor-pointer group"
     onClick={onClick}
   >
-    {recipe.image && (
+    <div className="relative rounded-lg overflow-hidden">
       <img 
-        src={recipe.image} 
-        alt={recipe.title} 
-        className="w-full h-48 object-cover rounded-lg mb-4"
+        src="/api/placeholder/400/320"
+        alt={item.title}
+        className="w-full h-32 object-cover group-hover:brightness-90 transition-all"
       />
-    )}
-    <h3 className="text-lg font-medium text-gray-800">{recipe.title}</h3>
-    <p className="text-sm text-gray-600 mt-2">{recipe.description}</p>
-    <div className="flex flex-wrap gap-2 mt-3">
-      {recipe.tags?.map((tag) => (
-        <span key={tag} className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">
-          {tag}
-        </span>
-      ))}
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
+        <p className="text-white text-sm font-medium truncate">{item.title}</p>
+      </div>
     </div>
   </motion.div>
 );
 
-// Main App Component
 const App = () => {
   const [activeTastes, setActiveTastes] = useState(new Set());
   const [searchQuery, setSearchQuery] = useState('');
-  const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-  // Initialize with some sample recipes
-  useEffect(() => {
-    setRecipes([
-      {
-        id: 1,
-        title: "Spicy Pad Thai",
-        description: "Classic Thai stir-fried rice noodles",
-        image: "/api/placeholder/400/300",
-        tags: ["Spicy", "Thai"]
-      },
-      {
-        id: 2,
-        title: "Green Curry",
-        description: "Creamy Thai green curry",
-        image: "/api/placeholder/400/300",
-        tags: ["Spicy", "Creamy"]
-      },
-      {
-        id: 3,
-        title: "Mango Sticky Rice",
-        description: "Sweet coconut sticky rice with mango",
-        image: "/api/placeholder/400/300",
-        tags: ["Sweet", "Thai"]
-      }
-    ]);
-  }, []);
-
-  // Greetings Animation
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentGreetingIndex((prev) => (prev + 1) % greetings.length);
-    }, 5000);
+    }, 8000); // Increased time to allow for typing animation
     return () => clearInterval(interval);
   }, []);
 
-  // Mock API call - Replace with your actual backend endpoint
-  const searchRecipes = async (query, tastes) => {
-    setLoading(true);
-    try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Filter recipes based on search query and tastes
-      let filtered = [...recipes];
-      
-      if (query) {
-        filtered = filtered.filter(recipe => 
-          recipe.title.toLowerCase().includes(query.toLowerCase()) ||
-          recipe.description.toLowerCase().includes(query.toLowerCase())
-        );
-      }
-      
-      if (tastes.size > 0) {
-        filtered = filtered.filter(recipe =>
-          recipe.tags.some(tag => tastes.has(tag))
-        );
-      }
-      
-      setRecipes(filtered);
-    } catch (error) {
-      console.error('Error searching recipes:', error);
-    } finally {
-      setLoading(false);
+  const handleTasteClick = (taste) => {
+    const newTastes = new Set(activeTastes);
+    if (newTastes.has(taste)) {
+      newTastes.delete(taste);
+    } else {
+      newTastes.add(taste);
     }
+    setActiveTastes(newTastes);
   };
 
-  // Debounced search
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      searchRecipes(searchQuery, activeTastes);
-    }, 500);
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery, activeTastes]);
+  const handleRecentSearchClick = (item) => {
+    setSearchQuery(item.title);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-pink-100">
@@ -178,24 +146,33 @@ const App = () => {
           >
             We Will Cook
           </motion.h1>
-          <motion.button 
-            className="p-2 rounded-full hover:bg-white/50 transition-colors"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            👤
-          </motion.button>
+          <div className="flex gap-4">
+            <motion.button 
+              className="px-4 py-2 rounded-lg bg-white text-gray-800 hover:bg-gray-50 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Login
+            </motion.button>
+            <motion.button 
+              className="px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Sign Up
+            </motion.button>
+          </div>
         </motion.header>
 
         <AnimatePresence mode="wait">
           <motion.h2
             key={currentGreetingIndex}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="text-xl text-center mb-6 text-gray-700"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="text-xl text-center mb-6 text-gray-700 min-h-[2em]"
           >
-            {greetings[currentGreetingIndex].text}
+            <TypewriterText text={greetings[currentGreetingIndex].text} />
           </motion.h2>
         </AnimatePresence>
 
@@ -233,44 +210,45 @@ const App = () => {
                 key={taste.label}
                 {...taste}
                 active={activeTastes.has(taste.label)}
-                onClick={() => {
-                  const newTastes = new Set(activeTastes);
-                  if (newTastes.has(taste.label)) {
-                    newTastes.delete(taste.label);
-                  } else {
-                    newTastes.add(taste.label);
-                  }
-                  setActiveTastes(newTastes);
-                }}
+                onClick={() => handleTasteClick(taste.label)}
               />
             ))}
           </motion.div>
         </motion.div>
 
-        <div className="mt-8">
-          <AnimatePresence>
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[1, 2, 3].map((n) => (
-                  <ShimmerEffect key={n} />
-                ))}
-              </div>
-            ) : (
-              <motion.div 
-                className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                layout
-              >
-                {recipes.map((recipe) => (
-                  <RecipeCard
-                    key={recipe.id}
-                    recipe={recipe}
-                    onClick={() => {/* Handle recipe click */}}
-                  />
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-12 mb-8"
+        >
+          <div className="flex items-center mb-4">
+            <Clock className="w-5 h-5 text-gray-600 mr-2" />
+            <h3 className="text-lg font-semibold text-gray-800">Recent Searches</h3>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {recentSearches.map((item) => (
+              <RecentSearchItem
+                key={item.id}
+                item={item}
+                onClick={() => handleRecentSearchClick(item)}
+              />
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div 
+          className="flex justify-center mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <motion.button
+            className="px-8 py-4 bg-orange-500 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-orange-600 transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Let's Start
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );
