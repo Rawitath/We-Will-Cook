@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'authentication',
     'rest_framework',
     'corsheaders',
+    'cooking',
 ]
 
 AUTH_USER_MODEL = 'authentication.WWCUser'
