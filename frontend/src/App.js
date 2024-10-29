@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, X, Clock } from 'lucide-react';
+import { Search, X, Clock, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const tastes = [
@@ -33,9 +33,8 @@ const TasteButton = ({ label, emoji, active, onClick }) => (
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
-    className={`flex items-center justify-center p-4 rounded-lg w-full 
-    ${active ? 'bg-orange-100 shadow-md' : 'bg-white hover:bg-orange-50'} 
-    transition-all duration-300 ease-in-out`}
+    className={`flex items-center justify-center p-4 rounded-lg w-full transition-all duration-300 ease-in-out
+    ${active ? 'bg-orange-500 text-white shadow-md' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'}`}
     layout
   >
     <motion.span 
@@ -45,7 +44,7 @@ const TasteButton = ({ label, emoji, active, onClick }) => (
     >
       {emoji}
     </motion.span>
-    <span className="text-gray-700">{label}</span>
+    <span>{label}</span>
   </motion.button>
 );
 
@@ -110,6 +109,7 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -132,8 +132,12 @@ const App = () => {
     setSearchQuery(item.title);
   };
 
+  const handleDarkModeToggle = () => {
+    setIsDarkMode((prevMode) => !prevMode);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-pink-100">
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-gray-300' : 'bg-gradient-to-b from-orange-50 to-pink-100 text-gray-800'}`}>
       <div className="max-w-4xl mx-auto p-6">
         <motion.header 
           className="flex justify-between items-center mb-8"
@@ -141,21 +145,22 @@ const App = () => {
           animate={{ y: 0, opacity: 1 }}
         >
           <motion.h1 
-            className="text-2xl font-bold text-gray-800"
+            className="text-2xl font-bold"
             whileHover={{ scale: 1.05 }}
           >
             We Will Cook
           </motion.h1>
           <div className="flex gap-4">
             <motion.button 
-              className="px-4 py-2 rounded-lg bg-white text-gray-800 hover:bg-gray-50 transition-colors"
+              className={`px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors ${isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-700'}`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={handleDarkModeToggle}
             >
-              Login
+              {isDarkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </motion.button>
             <motion.button 
-              className="px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition-colors"
+              className={`px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors ${isDarkMode ? 'bg-orange-500 text-gray-900' : 'bg-orange-500 text-white'}`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -170,21 +175,18 @@ const App = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-xl text-center mb-6 text-gray-700 min-h-[2em]"
+            className="text-xl text-center mb-6 min-h-[2em]"
           >
             <TypewriterText text={greetings[currentGreetingIndex].text} />
           </motion.h2>
         </AnimatePresence>
 
-        <motion.div 
-          className="relative mb-6"
-          animate={{ scale: isSearchFocused ? 1.02 : 1 }}
-        >
-          <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${isSearchFocused ? 'text-orange-500' : 'text-gray-400'}`} />
+        <div className="relative mb-6 flex justify-center">
+          <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${isSearchFocused ? 'text-orange-500' : `${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`}`} />
           <input
             type="text"
             placeholder="Search recipes..."
-            className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all"
+            className={`w-full max-w-2xl pl-12 pr-4 py-3 rounded-lg border transition-all ${isDarkMode ? 'bg-gray-800 border-gray-700 focus:ring-orange-500' : 'bg-white border-gray-200 focus:ring-orange-200'}`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
@@ -198,10 +200,10 @@ const App = () => {
               className="absolute right-4 top-1/2 transform -translate-y-1/2"
               onClick={() => setSearchQuery('')}
             >
-              <X className="text-gray-400 hover:text-gray-600" size={18} />
+              <X className={`transition-colors duration-300 ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`} size={18} />
             </motion.button>
           )}
-        </motion.div>
+        </div>
 
         <motion.div layout className="mb-6">
           <motion.div className="grid grid-cols-2 gap-4">
@@ -222,8 +224,8 @@ const App = () => {
           className="mt-12 mb-8"
         >
           <div className="flex items-center mb-4">
-            <Clock className="w-5 h-5 text-gray-600 mr-2" />
-            <h3 className="text-lg font-semibold text-gray-800">Recent Searches</h3>
+            <Clock className={`w-5 h-5 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <h3 className="text-lg font-semibold">Recent Searches</h3>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {recentSearches.map((item) => (
@@ -242,7 +244,7 @@ const App = () => {
           animate={{ opacity: 1, y: 0 }}
         >
           <motion.button
-            className="px-8 py-4 bg-orange-500 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-orange-600 transition-colors"
+            className={`px-8 py-4 text-lg font-semibold rounded-lg shadow-lg transition-colors ${isDarkMode ? 'bg-orange-500 text-gray-900 hover:bg-orange-600' : 'bg-orange-500 text-white hover:bg-orange-600'}`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
