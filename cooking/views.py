@@ -9,4 +9,5 @@ from .serializer import *
 # Create your views here.
 class TastePrefView(APIView):
     def get(self, request):
-        return Response("Hi")
+        serializer = TastePrefSerializer()
+        return Response(serializer.data)

@@ -4,7 +4,7 @@ from .models import *
 class TastePrefSerializer(serializers.ModelSerializer):
     class Meta:
         model = TastePrefModel
-        field = "__all__"
+        fields = "__all__"
     def get_pref(self, userid):
         pref = TastePrefModel.objects.filter(userid)
         return pref

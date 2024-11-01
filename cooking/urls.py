@@ -2,5 +2,5 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('/tastepref', TastePrefModel, name="anything")
+    path('tastepref/', TastePrefView.as_view(), name="anything")
 ]
