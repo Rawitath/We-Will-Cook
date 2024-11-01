@@ -14,7 +14,7 @@ class CondimentModel(models.Model):
         return json.loads(self.tastes, ensure_ascii=False)
 
 
-class TastePreferenceModel(models.Model):
+class TastePrefModel(models.Model):
     userid = models.CharField(max_length=256, unique=True)
     # Tastes is kept as dict parsed to json
     tastes = models.CharField(max_length=256)

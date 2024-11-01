@@ -1,6 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-# Create your views here.
-def CookingView(request):
-    return HttpResponse("<h1>Testing from Cooking!</h1>")
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import *
+from .serializer import *
+
+# Create your views here.
+class TastePrefView(APIView):
+    def get(self, request):
+        return Response("Hi")
