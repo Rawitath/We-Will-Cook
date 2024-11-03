@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChefHat, Moon, Sun, ArrowRight, Heart, Clock, Bookmark, Star, User, Search } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion} from 'framer-motion';
 
 const features = [
   {
