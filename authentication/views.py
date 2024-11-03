@@ -13,6 +13,17 @@ from django.core.mail import send_mail
 from django.conf import settings
 # Create your views here.
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.conf import settings
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 class WWCRegisterView(APIView):
     permission_classes = permissions.AllowAny
     def post(self, request):
@@ -66,3 +77,34 @@ class WWCUserView(APIView):
     def get(self, request):
         serializer = WWCUserSerializer(request.user)
         return Response({'current_user': serializer.data}, status=status.HTTP_200_OK)
+
+class RequestPasswordReset(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        user = User.objects.filter(email=email).first()
+        if user:
+            # สร้าง JWT token สำหรับ reset password
+            refresh = RefreshToken.for_user(user)
+            reset_token = str(refresh.access_token)
+            
+            reset_link = f"{settings.FRONTEND_URL}/reset-password/{reset_token}"
+            send_mail(
+                'Reset your password',
+                f'Click the link to reset your password: {reset_link}',
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+            return Response({"message": "Password reset link sent!"}, status=status.HTTP_200_OK)
+        return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+    
+class ResetPassword(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(request.user)
+            return Response({"message": "Password has been reset successfully!"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
