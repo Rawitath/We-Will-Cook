@@ -48,6 +48,19 @@ class WWCLogoutView(APIView):
         logout(request)
         return Response(status=status.HTTP_200_OK)
 
+class WWCGetResetView(APIView):
+    def get(self, request):
+        return Response({'Get Reset View'}, status=status.HTTP_200_OK)
+
+class WWCValidateReset(APIView):
+    def get(self, request):
+        return Response({'Validate Reset View'}, status=status.HTTP_200_OK)
+
+class WWCResetView(APIView):
+    def post(self, request):
+        return Response({'Reset View'}, status=status.HTTP_200_OK)
+    pass
+
 class WWCUserView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (SessionAuthentication,)
