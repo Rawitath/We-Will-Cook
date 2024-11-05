@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import logo from '../logo.svg';
 import '../App.css';
-import axios from 'axios';
 import AuthContext from './context/AuthContext';
 
 export default function Login(){
