@@ -37,15 +37,9 @@ class WWCUserSerializer(serializers.ModelSerializer):
         model = UserModel
         fields = ['userid', 'username', 'email', 'profile_pic']
 
-# class WWCTokenObtainPairSerializer(TokenObtainPairSerializer):
-#     @classmethod
-#     def get_token(self, user):
-#         token = super().get_token(user)
-#         token['name'] = 
-
 class ResetPasswordSerializer(serializers.Serializer):
-    password = serializers.CharField(write_only=True, min_length=8)
+    password = serializers.CharField(write_only=True)
 
-    def save(self, user):
+    def reset_password(self, user):
         user.password = make_password(self.validated_data['password'])
         user.save()

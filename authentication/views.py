@@ -31,7 +31,7 @@ class WWCRegisterView(APIView):
                     subject = f"Dear {user.username}, Your Account Has Been Created!"
                     message = f"Enjoy We Will Cook, {user.username}!"
                     send_mail(subject, message,
-                          from_email, recipient_list=to_email,fail_silently=False)
+                          from_email, recipient_list=to_email,fail_silently=True)
                     return Response("User Created.", status=status.HTTP_201_CREATED)
         return Response(validated_data, status=status.HTTP_400_BAD_REQUEST)
     
@@ -57,20 +57,12 @@ class WWCLogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     def post(self, request):
-        return Response(status=status.HTTP_200_OK)
-
-class WWCGetResetView(APIView):
-    def get(self, request):
-        return Response({'Get Reset View'}, status=status.HTTP_200_OK)
-
-class WWCValidateReset(APIView):
-    def get(self, request):
-        return Response({'Validate Reset View'}, status=status.HTTP_200_OK)
-
-class WWCResetView(APIView):
-    def post(self, request):
-        return Response({'Reset View'}, status=status.HTTP_200_OK)
-    pass
+        from datetime import timedelta
+        refresh = RefreshToken(request.data.get('refresh'))
+        access = refresh.access_token
+        access.lifetime = timedelta(seconds=1)
+        refresh.blacklist()
+        return Response({'Logout Successfully'},status=status.HTTP_200_OK)
 
 class WWCUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -82,33 +74,45 @@ class WWCUserView(APIView):
         else:
             return Response({'User is not authenticated.'},status=status.HTTP_401_UNAUTHORIZED)
 
-class RequestPasswordReset(APIView):
+class WWCRequestPasswordReset(APIView):
     def post(self, request):
+        from datetime import timedelta
         email = request.data.get('email')
         user = UserModel.objects.filter(email=email).first()
         if user:
             # สร้าง JWT token สำหรับ reset password
             refresh = RefreshToken.for_user(user)
-            reset_token = str(refresh.access_token)
+            reset_token = refresh.access_token
+            reset_token.lifetime = timedelta(minutes=3)
             
-            reset_link = f"{settings.FRONTEND_URL}/reset-password/{reset_token}"
-            send_mail(
-                'Reset your password',
-                f'Click the link to reset your password: {reset_link}',
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
-                fail_silently=False,
-            )
-            return Response({"message": "Password reset link sent!"}, status=status.HTTP_200_OK)
-        return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            reset_link = f"{settings.FRONTEND_URL}/reset/{reset_token}"
+            from_email = settings.EMAIL_HOST_USER
+            to_email = [email]
+            subject = f"Dear {user.username}, this is your password reset link."
+            message = f'Please click on this link to reset your password: {reset_link}'
+            send_mail(subject, message,
+                    from_email, recipient_list=to_email,fail_silently=True)
+        return Response({"message": "Password reset link sent!"}, status=status.HTTP_200_OK)
 
-class ResetPassword(APIView):
+class WWCResetPassword(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        serializer = WWCUserSerializer(request.user)
+        if request.user.is_authenticated:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'Reset password link is invalid or expired.'},status=status.HTTP_401_UNAUTHORIZED)
+
     def post(self, request):
-        serializer = ResetPasswordSerializer(data=request.data)
+        validated_data = request.data
+        if validate_password(request.data.get('password')) != None:
+            validated_data = validate_password(request.data.get('password'))
+        serializer = ResetPasswordSerializer(data=validated_data)
         if serializer.is_valid():
-            serializer.save(request.user)
+            serializer.reset_password(request.user)
             return Response({"message": "Password has been reset successfully!"}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if validated_data == request.data.get('password'):
+            return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(validated_data, status=status.HTTP_400_BAD_REQUEST)

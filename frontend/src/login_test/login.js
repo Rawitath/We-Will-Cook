@@ -35,6 +35,7 @@ export default function Login(){
         <button onClick={() => register(username, email, password)}>Create User</button>
         <input placeholder='username' name='username' value={loguser} onChange={e => setLoguser(e.target.value)}></input>
         <input placeholder='password' type='password' name='password' value={logpass} onChange={e => setLogpass(e.target.value)}></input>
+        <a href='/forget'>Forgot Password?</a>
         <button onClick={() => login(loguser, logpass)}>Login</button>
         <button onClick={logout}>Logout</button>
       </header>
