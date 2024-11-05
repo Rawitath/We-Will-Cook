@@ -24,7 +24,7 @@ class WWCRegisterView(APIView):
         if validated_data == request.data:
             serializer = WWCRegisterSerializer(data=validated_data)
             if serializer.is_valid(raise_exception=True):
-                user = serializer.create(validated_data)
+                user = serializer.create(validated_data, True)
                 if user:
                     from_email = settings.EMAIL_HOST_USER
                     to_email = [user.email]
@@ -58,6 +58,19 @@ class WWCLogoutView(APIView):
     authentication_classes = [JWTAuthentication]
     def post(self, request):
         return Response(status=status.HTTP_200_OK)
+
+class WWCGetResetView(APIView):
+    def get(self, request):
+        return Response({'Get Reset View'}, status=status.HTTP_200_OK)
+
+class WWCValidateReset(APIView):
+    def get(self, request):
+        return Response({'Validate Reset View'}, status=status.HTTP_200_OK)
+
+class WWCResetView(APIView):
+    def post(self, request):
+        return Response({'Reset View'}, status=status.HTTP_200_OK)
+    pass
 
 class WWCUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]

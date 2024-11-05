@@ -14,7 +14,7 @@ def get_default_pfp():
 
 class WWCUserManager(BaseUserManager):
     use_in_migrations = True
-    def _create(self, username, email, password, **extra_fields):
+    def _create(self, username, email, password, is_active, **extra_fields):
         email = self.normalize_email(email)
         GlobalUserModel = apps.get_model(
             self.model._meta.app_label, self.model._meta.object_name
@@ -22,24 +22,26 @@ class WWCUserManager(BaseUserManager):
         username = GlobalUserModel.normalize_username(username)
         user = self.model(username=username, email=email, **extra_fields)
         user.password = make_password(password)
+        user.is_active = is_active
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email, password, **extra_fields):
+    def create_user(self, username, email, password, is_active, **extra_fields):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
-        return self._create(username, email, password, **extra_fields)
+        return self._create(username, email, password, is_active, **extra_fields)
 
     def create_superuser(self, username, email, password, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
+        
 
         if extra_fields.get("is_staff") is not True:
             raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self._create(username, email, password, **extra_fields)
+        return self._create(username, email, password, True, **extra_fields)
 
     def with_perm(
         self, perm, is_active=True, include_superusers=True, backend=None, obj=None

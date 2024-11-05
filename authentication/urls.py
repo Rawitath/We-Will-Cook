@@ -10,6 +10,7 @@ urlpatterns = [
     path('register/', WWCRegisterView.as_view()),
     path('login/', WWCLoginView.as_view()),
     path('logout/', WWCLogoutView.as_view()),
+
     path('request-reset-password/', RequestPasswordReset.as_view(), name='request-reset-password'),
     path('reset-password/', ResetPassword.as_view(), name='reset-password'),
 

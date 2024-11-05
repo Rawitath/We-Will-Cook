@@ -12,11 +12,12 @@ class WWCRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
         fields = ['userid', 'username', 'email', 'password', 'profile_pic']
-    def create(self, validated_data):
+    def create(self, validated_data, bypass_confirmation):
         user = UserModel.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password']
+            password=validated_data['password'],
+            is_active=bypass_confirmation
         )
         user.save()
         return user
