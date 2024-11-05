@@ -18,7 +18,12 @@ export const AuthProvider = ({children}) => {
             "username": username,
             "email": email,
             "password": password
-          });
+          }).then((response) =>{
+            if(response.status === 201){
+                login(username, password);
+            }
+          }
+          );
     }
     let login = (username, password) =>{
         axios.post(api_url+'login/',{
