@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChefHat, Moon, Sun, ArrowRight, Heart, Clock, Bookmark, Star, User, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../context/ThemeContext';
+import foodimage from '../assets/foodplaceholder.jpg';
 
 const features = [
   {
@@ -29,29 +31,29 @@ const features = [
 
 const sampleRecipes = [
   {
-    title: "Tom Yum Kung",
-    image: "/api/placeholder/300/200",
-    difficulty: "Medium",
+    title: "บะหมี่หมูกรอบ",
+    image: foodimage,
+    opularity: "Hot",
     time: "45 mins",
     likes: 1234
   },
   {
     title: "Pad Thai",
-    image: "/api/placeholder/300/200",
+    image: foodimage,
     difficulty: "Easy",
     time: "30 mins",
     likes: 2345
   },
   {
     title: "เส้นใหญ่น้ำตก",
-    image: "/api/placeholder/300/200",
+    image: foodimage,
     difficulty: "Medium",
     time: "60 mins",
     likes: 1890
   },
   {
     title: "เส้นเล็ก",
-    image: "/api/placeholder/300/200",
+    image: foodimage,
     difficulty: "Easy",
     time: "25 mins",
     likes: 3456
@@ -90,7 +92,7 @@ const RecipeCard = ({ recipe, index }) => (
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeRecipeIndex, setActiveRecipeIndex] = useState(0);
 
@@ -130,7 +132,7 @@ export default function HomePage() {
             } backdrop-blur-sm shadow-md hover:shadow-lg`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setIsDarkMode(!isDarkMode)}
+            onClick={toggleTheme}
           >
             {isDarkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           </motion.button>
@@ -168,14 +170,13 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-4">
-              <motion.button
-                className="w-full px-6 py-4 rounded-xl font-medium bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <User className="w-5 h-5" />
-                Create Free Account
-              </motion.button>
+            <motion.button
+            onClick={() => navigate('/register')}
+            className="w-full px-6 py-4 rounded-xl font-medium bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+            >
+            <User className="w-5 h-5" />
+            Create Free Account
+            </motion.button>
 
               <motion.button
                 onClick={() => navigate('/customize')}

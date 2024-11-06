@@ -16,7 +16,9 @@ import {
   ChevronUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../context/ThemeContext';
 
+// Constants for noodle styles
 const noodleStyles = [
   { 
     id: 'soup', 
@@ -32,6 +34,7 @@ const noodleStyles = [
   }
 ];
 
+
 const noodleTypes = [
   { id: 'sen-lek', name: 'เส้นเล็ก', icon: '🍜', description: 'เส้นเล็กนุ่ม ทานง่าย' },
   { id: 'sen-yai', name: 'เส้นใหญ่', icon: '🍜', description: 'เส้นใหญ่เหนียวนุ่ม' },
@@ -41,13 +44,7 @@ const noodleTypes = [
   { id: 'bamee-yok', name: 'บะหมี่หยก', icon: '🍜', description: 'บะหมี่หยกเขียว เหนียวนุ่มพิเศษ' }
 ];
 
-const tastePreferences = [
-  { id: 'spicy', name: 'ความเผ็ด', icon: '🌶️', description: 'ระดับความเผ็ดร้อน' },
-  { id: 'salty', name: 'ความเค็ม', icon: '🧂', description: 'ระดับความเค็มกำลังดี' },
-  { id: 'sour', name: 'ความเปรี้ยว', icon: '🍋', description: 'ระดับความเปรี้ยว' },
-  { id: 'sweet', name: 'ความหวาน', icon: '🍯', description: 'ระดับความหวาน' },
-];
-
+// Constants for soup types
 const soupTypes = [
   { 
     id: 'nam-sai', 
@@ -75,11 +72,18 @@ const soupTypes = [
   }
 ];
 
+// Constants for taste preferences
+const tastePreferences = [
+  { id: 'spicy', name: 'ความเผ็ด', icon: '🌶️', description: 'ระดับความเผ็ดร้อน' },
+  { id: 'salty', name: 'ความเค็ม', icon: '🧂', description: 'ระดับความเค็มกำลังดี' },
+  { id: 'sour', name: 'ความเปรี้ยว', icon: '🍋', description: 'ระดับความเปรี้ยว' },
+  { id: 'sweet', name: 'ความหวาน', icon: '🍯', description: 'ระดับความหวาน' },
+];
 export default function NoodleCustomization() {
   const navigate = useNavigate();
   
   // State management
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [noodleStyle, setNoodleStyle] = useState(null);
   const [selectedNoodle, setSelectedNoodle] = useState(null);
@@ -98,6 +102,69 @@ export default function NoodleCustomization() {
   const soupRef = useRef(null);
   const tasteRef = useRef(null);
 
+  // Enhanced Magic Menu Generator
+  const generateMagicPreferences = () => {
+    const timeOfDay = new Date().getHours();
+    let preferences;
+    
+    // Randomly select noodle style
+    const randomStyle = noodleStyles[Math.floor(Math.random() * noodleStyles.length)].id;
+    setTimeout(() => setNoodleStyle(randomStyle), 300);
+
+    // Randomly select noodle type
+    const randomNoodle = noodleTypes[Math.floor(Math.random() * noodleTypes.length)].id;
+    setTimeout(() => setSelectedNoodle(randomNoodle), 600);
+
+    // Randomly select soup type if noodle style is soup
+    if (randomStyle === 'soup') {
+      const randomSoup = soupTypes[Math.floor(Math.random() * soupTypes.length)].id;
+      setTimeout(() => setSelectedSoup(randomSoup), 900);
+    }
+
+    // Generate time-based taste preferences with fixed values
+    if (timeOfDay < 11) {
+      preferences = {
+        spicy: 25,  // Mild
+        salty: 50,  // Medium
+        sour: 25,   // Mild
+        sweet: 25,  // Mild
+        message: "🌅 เมนูเช้าแบบกลมกล่อม ทานง่าย เพิ่มพลังให้วันนี้!"
+      };
+    } else if (timeOfDay < 15) {
+      preferences = {
+        spicy: 75,  // Spicy
+        salty: 50,  // Medium
+        sour: 50,   // Medium
+        sweet: 0,   // Not sweet
+        message: "🌞 เมนูกลางวันจัดจ้าน เผ็ดร้อนสะใจ แก้ง่วงยามบ่าย!"
+      };
+    } else {
+      preferences = {
+        spicy: 50,  // Medium
+        salty: 50,  // Medium
+        sour: 25,   // Mild
+        sweet: 25,  // Mild
+        message: "🌙 เมนูเย็นรสกลมกล่อม อร่อยสบายท้อง พร้อมพักผ่อน"
+      };
+    }
+
+    // Apply the preferences
+    setTimeout(() => setTasteValues(preferences), 1200);
+
+    // Show recommendation message
+    const messageElement = document.createElement('div');
+    messageElement.className = 'fixed top-4 right-4 bg-white/90 text-gray-800 p-4 rounded-lg shadow-lg z-50 animate-fade-in';
+    messageElement.innerHTML = `
+      <div class="flex items-center gap-2">
+        <span class="animate-bounce">✨</span>
+        ${preferences.message}
+        <span class="animate-bounce">✨</span>
+      </div>
+    `;
+    document.body.appendChild(messageElement);
+    setTimeout(() => messageElement.remove(), 3000);
+  };
+
   // Scroll functions
   const scrollToRef = (ref) => {
     if (ref.current) {
@@ -113,6 +180,15 @@ export default function NoodleCustomization() {
       top: 0,
       behavior: 'smooth'
     });
+  };
+
+  // Theme helper function
+  const getThemeClasses = (selected) => {
+    const baseClasses = "p-4 rounded-lg flex flex-col items-center justify-center gap-2 transition-all";
+    if (selected) {
+      return `${baseClasses} ${isDarkMode ? 'bg-orange-500' : 'bg-orange-500'} text-white`;
+    }
+    return `${baseClasses} ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'}`;
   };
 
   // Scroll detection
@@ -143,58 +219,6 @@ export default function NoodleCustomization() {
       setTimeout(() => scrollToRef(tasteRef), 300);
     }
   }, [selectedSoup, selectedNoodle, noodleStyle]);
-
-  // Magic preferences generator
-  const generateMagicPreferences = () => {
-    const timeOfDay = new Date().getHours();
-    let preferences;
-
-    if (timeOfDay < 11) {
-      preferences = {
-        spicy: 25,
-        salty: 75,
-        sour: 25,
-        sweet: 50,
-        message: "🌅 เมนูเช้าแบบกลางๆ ทานง่าย เค็มนำหน้านิดๆ"
-      };
-    } else if (timeOfDay < 15) {
-      preferences = {
-        spicy: 75,
-        salty: 50,
-        sour: 75,
-        sweet: 25,
-        message: "☀️ เมนูกลางวันจัดจ้าน เผ็ดเปรี้ยวสะใจ"
-      };
-    } else {
-      preferences = {
-        spicy: 50,
-        salty: 50,
-        sour: 50,
-        sweet: 50,
-        message: "🌙 เมนูเย็นกลมกล่อม ทานง่าย"
-      };
-    }
-
-    setTasteValues(preferences);
-    alert(preferences.message);
-  };
-
-  // Theme class helper
-  const getThemeClasses = (selected) => {
-    const baseClasses = "p-4 rounded-lg flex flex-col items-center justify-center gap-2 transition-all";
-    if (selected) {
-      return `${baseClasses} ${isDarkMode ? 'bg-orange-500' : 'bg-orange-500'} text-white`;
-    }
-    return `${baseClasses} ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'}`;
-  };
-
-  // API data preparation
-  const prepareApiData = () => ({
-    noodleStyle,
-    noodleType: selectedNoodle,
-    soupType: selectedSoup,
-    tastePreferences: tasteValues,
-  });
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
       isDarkMode 
@@ -223,7 +247,7 @@ export default function NoodleCustomization() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={toggleTheme}
               className={`p-2 rounded-full ${
                 isDarkMode ? 'bg-gray-800 text-yellow-500' : 'bg-white/80 text-gray-600'
               } shadow-md hover:shadow-lg transition-all`}
@@ -243,10 +267,37 @@ export default function NoodleCustomization() {
             isDarkMode
               ? 'from-purple-600 to-pink-600'
               : 'from-purple-500 to-pink-500'
-          } text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2`}
+          } text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group`}
         >
-          <Sparkles className="w-5 h-5" />
-          ✨ ให้เราแนะนำรสชาติที่ใช่สำหรับคุณ
+          <motion.div
+            animate={{
+              rotate: [0, 360],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          >
+            <Sparkles className="w-5 h-5" />
+          </motion.div>
+          <span className="relative">
+            ✨ ให้เราแนะนำเมนูที่ใช่สำหรับคุณ
+          </span>
+          <motion.div
+            animate={{
+              rotate: [0, -360],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          >
+            <Sparkles className="w-5 h-5" />
+          </motion.div>
         </motion.button>
 
         {/* Search Bar */}
@@ -266,7 +317,6 @@ export default function NoodleCustomization() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-
         {/* Noodle Style Selection */}
         <motion.section
           ref={styleRef}
@@ -286,7 +336,16 @@ export default function NoodleCustomization() {
                 className={getThemeClasses(noodleStyle === style.id)}
                 onClick={() => setNoodleStyle(style.id)}
               >
-                <span className="text-2xl">{style.icon}</span>
+                <motion.span 
+                  className="text-2xl"
+                  animate={noodleStyle === style.id ? {
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 10, -10, 0]
+                  } : {}}
+                  transition={{ duration: 0.5 }}
+                >
+                  {style.icon}
+                </motion.span>
                 <span className="font-semibold">{style.name}</span>
                 <span className={`text-sm ${
                   noodleStyle === style.id ? 'text-white' : 'opacity-75'
@@ -297,153 +356,212 @@ export default function NoodleCustomization() {
         </motion.section>
 
         {/* Noodle Type Selection */}
-        {noodleStyle && (
-          <motion.section
-            ref={noodleRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`${
-              isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'
-            } backdrop-blur-sm rounded-xl p-6 shadow-lg mb-6`}
-          >
-            <h2 className="text-xl font-semibold mb-4">2. เลือกชนิดเส้น</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {noodleTypes.map((noodle) => (
-                <motion.button
-                  key={noodle.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={getThemeClasses(selectedNoodle === noodle.id)}
-                  onClick={() => setSelectedNoodle(noodle.id)}
-                >
-                  <span className="text-2xl">{noodle.icon}</span>
-                  <span className="font-semibold">{noodle.name}</span>
-                  <span className={`text-sm ${
-                    selectedNoodle === noodle.id ? 'text-white' : 'opacity-75'
-                  }`}>{noodle.description}</span>
-                </motion.button>
-              ))}
-            </div>
-          </motion.section>
-        )}
+        <AnimatePresence>
+          {noodleStyle && (
+            <motion.section
+              ref={noodleRef}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className={`${
+                isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'
+              } backdrop-blur-sm rounded-xl p-6 shadow-lg mb-6`}
+            >
+              <h2 className="text-xl font-semibold mb-4">2. เลือกชนิดเส้น</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {noodleTypes.map((noodle, index) => (
+                  <motion.button
+                    key={noodle.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: 0,
+                      transition: { delay: index * 0.1 }
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={getThemeClasses(selectedNoodle === noodle.id)}
+                    onClick={() => setSelectedNoodle(noodle.id)}
+                  >
+                    <motion.span 
+                      className="text-2xl"
+                      animate={selectedNoodle === noodle.id ? {
+                        scale: [1, 1.2, 1],
+                        rotate: [0, 10, -10, 0]
+                      } : {}}
+                      transition={{ duration: 0.5 }}
+                    >
+                      {noodle.icon}
+                    </motion.span>
+                    <span className="font-semibold">{noodle.name}</span>
+                    <span className={`text-sm ${
+                      selectedNoodle === noodle.id ? 'text-white' : 'opacity-75'
+                    }`}>{noodle.description}</span>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
 
         {/* Soup Type Selection */}
-        {noodleStyle === 'soup' && selectedNoodle && (
-          <motion.section
-            ref={soupRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`${
-              isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'
-            } backdrop-blur-sm rounded-xl p-6 shadow-lg mb-6`}
-          >
-            <h2 className="text-xl font-semibold mb-4">3. เลือกน้ำซุป</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {soupTypes.map((soup) => (
-                <motion.button
-                  key={soup.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={getThemeClasses(selectedSoup === soup.id)}
-                  onClick={() => setSelectedSoup(soup.id)}
-                >
-                  <div className={`p-2 rounded-full ${
-                    selectedSoup === soup.id ? 'bg-white/20' : ''
-                  }`}>
-                    {soup.icon}
-                  </div>
-                  <span className="font-semibold">{soup.name}</span>
-                  <span className={`text-sm ${
-                    selectedSoup === soup.id ? 'text-white' : 'opacity-75'
-                  }`}>{soup.description}</span>
-                </motion.button>
-              ))}
-            </div>
-          </motion.section>
-        )}
-
+        <AnimatePresence>
+          {noodleStyle === 'soup' && selectedNoodle && (
+            <motion.section
+              ref={soupRef}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className={`${
+                isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'
+              } backdrop-blur-sm rounded-xl p-6 shadow-lg mb-6`}
+            >
+              <h2 className="text-xl font-semibold mb-4">3. เลือกน้ำซุป</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {soupTypes.map((soup, index) => (
+                  <motion.button
+                    key={soup.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: 0,
+                      transition: { delay: index * 0.1 }
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={getThemeClasses(selectedSoup === soup.id)}
+                    onClick={() => setSelectedSoup(soup.id)}
+                  >
+                    <motion.div 
+                      className={`p-2 rounded-full ${
+                        selectedSoup === soup.id ? 'bg-white/20' : ''
+                      }`}
+                    >
+                      {soup.icon}
+                    </motion.div>
+                    <span className="font-semibold">{soup.name}</span>
+                    <span className={`text-sm ${
+                      selectedSoup === soup.id ? 'text-white' : 'opacity-75'
+                    }`}>{soup.description}</span>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
         {/* Taste Preferences */}
-        {selectedNoodle && (noodleStyle === 'dry' || selectedSoup) && (
-          <motion.section
-            ref={tasteRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`${
-              isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'
-            } backdrop-blur-sm rounded-xl p-6 shadow-lg mb-6`}
-          >
-            <h2 className="text-xl font-semibold mb-4">
-              {noodleStyle === 'dry' ? '3.' : '4.'} ปรับแต่งรสชาติ
-            </h2>
-            <div className="space-y-8">
-              {tastePreferences.map((taste) => (
-                <div key={taste.id} className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{taste.icon}</span>
-                      <div>
-                        <span className="font-medium">{taste.name}</span>
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {taste.description}
-                        </p>
+        <AnimatePresence>
+          {selectedNoodle && (noodleStyle === 'dry' || selectedSoup) && (
+            <motion.section
+              ref={tasteRef}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className={`${
+                isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'
+              } backdrop-blur-sm rounded-xl p-6 shadow-lg mb-6`}
+            >
+              <h2 className="text-xl font-semibold mb-4">
+                {noodleStyle === 'dry' ? '3.' : '4.'} ปรับแต่งรสชาติ
+              </h2>
+              <div className="space-y-8">
+                {tastePreferences.map((taste, index) => (
+                  <motion.div
+                    key={taste.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      x: 0,
+                      transition: { delay: index * 0.1 }
+                    }}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{taste.icon}</span>
+                        <div>
+                          <span className="font-medium">{taste.name}</span>
+                          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {taste.description}
+                          </p>
+                        </div>
                       </div>
+                      <span className={`px-3 py-1 rounded-full text-sm ${
+                        isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                      }`}>
+                        {tasteValues[taste.id]}%
+                      </span>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-sm ${
-                      isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-                    }`}>
-                      {tasteValues[taste.id]}%
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-5 gap-2">
-                    {[0, 25, 50, 75, 100].map((value) => (
-                      <motion.button
-                        key={value}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`py-2 rounded-lg transition-all ${
-                          tasteValues[taste.id] === value
-                            ? 'bg-orange-500 text-white'
-                            : isDarkMode
-                              ? 'bg-gray-700 hover:bg-gray-600'
-                              : 'bg-gray-50 hover:bg-gray-100'
-                        }`}
-                        onClick={() => setTasteValues(prev => ({
-                          ...prev,
-                          [taste.id]: value
-                        }))}
-                      >
-                        {value}
-                      </motion.button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.section>
-        )}
+                    <div className="grid grid-cols-5 gap-2">
+                      {[0, 25, 50, 75, 100].map((value) => (
+                        <motion.button
+                          key={value}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`py-2 rounded-lg transition-all ${
+                            tasteValues[taste.id] === value
+                              ? 'bg-orange-500 text-white'
+                              : isDarkMode
+                                ? 'bg-gray-700 hover:bg-gray-600'
+                                : 'bg-gray-50 hover:bg-gray-100'
+                          }`}
+                          onClick={() => setTasteValues(prev => ({
+                            ...prev,
+                            [taste.id]: value
+                          }))}
+                        >
+                          {value}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
 
         {/* Submit Button */}
-        {selectedNoodle && (noodleStyle === 'dry' || selectedSoup) && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex justify-end"
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                const data = prepareApiData();
-                console.log('Sending to API:', data);
-                alert('บันทึกความชอบของคุณแล้ว! 🎉');
-              }}
-              className={`px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center gap-2`}
+        <AnimatePresence>
+          {selectedNoodle && (noodleStyle === 'dry' || selectedSoup) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="flex justify-end"
             >
-              บันทึกรสชาติที่ชอบ
-              <ChevronRight className="w-5 h-5" />
-            </motion.button>
-          </motion.div>
-        )}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  const data = {
+                    noodleStyle,
+                    noodleType: selectedNoodle,
+                    soupType: selectedSoup,
+                    tastePreferences: tasteValues,
+                  };
+                  console.log('บันทึกความชอบ:', data);
+                  
+                  const messageElement = document.createElement('div');
+                  messageElement.className = 'fixed top-4 right-4 bg-white/90 text-gray-800 p-4 rounded-lg shadow-lg z-50 animate-fade-in';
+                  messageElement.innerHTML = `
+                    <div class="flex items-center gap-2">
+                      <span class="animate-bounce">✨</span>
+                      บันทึกความชอบของคุณแล้ว!
+                      <span class="animate-bounce">✨</span>
+                    </div>
+                  `;
+                  document.body.appendChild(messageElement);
+                  setTimeout(() => messageElement.remove(), 3000);
+                }}
+                className="px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+              >
+                บันทึกรสชาติที่ชอบ
+                <ChevronRight className="w-5 h-5" />
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Back to Top Button */}
         <AnimatePresence>
