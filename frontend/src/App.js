@@ -1,26 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
 import React from 'react';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import Login from './login_test/login';
+import Home from './login_test/home';
+import UserPage from './login_test/userpage';
+import { AuthProvider } from './login_test/context/AuthContext';
+import Forget from './login_test/forgot';
+import ResetPassword from './login_test/reset';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          We Will Cook stated here! (API Work in Progress)
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  return(
+    <>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route path='/' element={<Home/>}></Route>
+            <Route path='/login' element={<Login/>}></Route>
+            <Route path='/user' element={<UserPage/>}></Route>
+            <Route path='/forget' element={<Forget/>}></Route>
+            <Route path='/reset/:token' element={<ResetPassword/>}></Route>
+          </Routes>
+          </AuthProvider>
+      </BrowserRouter>
+    </>
+  )
 }
 
 export default App;
