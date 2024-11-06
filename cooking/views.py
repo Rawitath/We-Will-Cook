@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from .models import *
 from .serializer import *
 from .logic import display_recipe
+from rest_framework import status
 
 # Create your views here.
 class TastePrefView(APIView):
@@ -14,7 +15,9 @@ class TastePrefView(APIView):
         return Response(serializer.data)
 
 class ShowRecipeView(APIView):
-    def get(self, request):
-        cup_size = 1.5
-        response = display_recipe(cup_size)
-        return HttpResponse(response, content_type="text/plain")
+    def post(self, request):
+        serializer = NoodleSerializer(data=request.data)
+        if serializer.is_valid():
+            response = display_recipe(request.data.get('flavors'), request.data.get('noodle_size'))
+            return Response(response, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

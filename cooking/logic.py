@@ -1,24 +1,35 @@
-def get_noodle_recipe():
+def get_noodle_recipe(flavor, level, cup_size):
     levels = {
-        "0%": 0,
-        "25%": 0.75,
-        "75%": 2.25,
-        "100%": 3
+        "0": 0,
+        "25": 0.75,
+        "50": 1.5,
+        "75": 2.25,
+        "100": 3
     }
     recipe = {
-        "Sweetness Level": {level: f"Sugar: {amount} tablespoons" for level, amount in levels.items()},
-        "Sourness Level": {level: f"Vinegar: {amount} tablespoons" for level, amount in levels.items()},
-        "Saltiness Level": {level: f"Fish sauce: {amount} tablespoons" for level, amount in levels.items()},
-        "Spiciness Level": {level: f"Chili: {amount} teaspoons" for level, amount in levels.items()}
+        "Sweetness Level": {'Sugar': levels[level] * cup_size},
+        "Sourness Level": {'Vinegar': levels[level] * cup_size},
+        "Saltiness Level": {'Fish sauce': levels[level] * cup_size},
+        "Spiciness Level": {'Chili': levels[level] * cup_size}
     }
-    
-    return recipe
+    return recipe[flavor]
 
-def display_recipe(cup_size):
-    noodle_recipe = get_noodle_recipe()
-    response = ""
-    for flavor, levels in noodle_recipe.items():
-        response += f"{flavor}\n"
-        for level, amount in levels.items():
-            response += f"  {level}: {amount * cup_size}\n"
+def display_recipe(flavordict, cup_size):
+    response = {}
+    for i in flavordict.keys():
+        response.update(get_noodle_recipe(i, flavordict[i], cup_size))
     return response
+
+# Input Example
+# {
+#     "noodle_style":"soup",
+#     "noodle_type":"yellow",
+#     "noodle_size":1.0,
+#     "flavors":
+#     {
+#         "Sweetness Level": "75",
+#         "Sourness Level": "25",
+#         "Saltiness Level": "50",
+#         "Spiciness Level": "0"    
+#     }
+# }

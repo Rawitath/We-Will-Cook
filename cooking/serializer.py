@@ -16,3 +16,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeModel
         fields = "__all__"
+
+class NoodleSerializer(serializers.Serializer):
+    noodle_style = serializers.CharField()
+    noodle_type = serializers.CharField()
+    noodle_size = serializers.FloatField()
+    flavors = serializers.DictField()
