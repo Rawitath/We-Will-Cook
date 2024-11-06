@@ -5,7 +5,6 @@ def get_noodle_recipe():
         "75%": 2.25,
         "100%": 3
     }
-    
     recipe = {
         "Sweetness Level": {level: f"Sugar: {amount} tablespoons" for level, amount in levels.items()},
         "Sourness Level": {level: f"Vinegar: {amount} tablespoons" for level, amount in levels.items()},
@@ -15,11 +14,11 @@ def get_noodle_recipe():
     
     return recipe
 
-def display_recipe():
+def display_recipe(cup_size):
     noodle_recipe = get_noodle_recipe()
     response = ""
     for flavor, levels in noodle_recipe.items():
         response += f"{flavor}\n"
         for level, amount in levels.items():
-            response += f"  {level}: {amount}\n"
+            response += f"  {level}: {amount * cup_size}\n"
     return response

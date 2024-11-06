@@ -6,13 +6,13 @@ class TastePrefSerializer(serializers.ModelSerializer):
         model = TastePrefModel
         fields = "__all__"
     def get_pref(self, userid):
-        pref = TastePrefModel.objects.filter(userid)
+        pref = TastePrefModel.objects.filter(userid=userid)
         return pref
 class CondimentSerializer(serializers.ModelSerializer):
     class Meta:
-        models = CondimentModel
+        model = CondimentModel
         fields = "__all__"
 class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
-        models = RecipeModel
+        model = RecipeModel
         fields = "__all__"
