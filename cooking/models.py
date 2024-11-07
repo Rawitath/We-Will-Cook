@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 
@@ -14,12 +15,13 @@ class CondimentModel(models.Model):
         return json.loads(self.tastes, ensure_ascii=False)
 
 class TastePrefModel(models.Model):
-    userid = models.CharField(max_length=256, unique=True)
+    userid = models.UUIDField(unique=True, primary_key=True)
     # Tastes is kept as dict parsed to json
-    tastes = models.CharField(max_length=256)
+    tastes = models.JSONField()
     # WIP naja
 
 class RecipeModel(models.Model):
+    userid = models.UUIDField(default=uuid.uuid4())
     name = models.CharField(max_length=256)
     condiments = models.JSONField()
     is_favorite = models.BooleanField(default=False)
