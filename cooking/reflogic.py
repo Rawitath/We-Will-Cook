@@ -22,9 +22,9 @@ def display_recipe(flavordict, cup_size):
 
 # Input Example
 # {
-#     "noodle_style":"soup",
-#     "noodle_type":"yellow",
-#     "noodle_size":1.0,
+#     "noodle_style":"น้ำใส",
+#     "noodle_type":"หมี่เหลือง",
+#     "noolde_size":"เล็ก",
 #     "flavors":
 #     {
 #         "Sweetness Level": "75",
