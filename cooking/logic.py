@@ -1,4 +1,4 @@
-def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type=None):
+def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type=None, health_conditions=None):
     levels = {
         "0": 0,
         "25": 0.75,
@@ -7,7 +7,6 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type=None):
         "100": 3
     }
     
-    # คำนวณ intensity ตามระดับและขนาดถ้วย
     intensity = levels[level] * cup_size
     
     if soup_type == "น้ำใส" and intensity > 1.5:
@@ -18,14 +17,16 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type=None):
         intensity = 2
     if soup_type == "น้ำต้มยำ" and intensity > 2:
         intensity = 2
-    # ข้อมูลรสชาติของน้ำซุปแต่ละประเภท
+    if soup_type == "แห้ง" and intensity > 2:
+        intensity = 2
+
     noodle_clear_broth = {
         "เส้นเล็ก": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "เส้นใหญ่": {"Sweetness Level": 0.25, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "หมี่ขาว": {"Sweetness Level": 0.25, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "หมี่เหลือง": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "หมี่หยก": {"Sweetness Level": 0.25, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
-        "วุ้นเส้น": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 1}
+        "วุ้นเส้น": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25}
     }
     noodle_guay_teow_nam_khon = {
         "เส้นเล็ก": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
@@ -51,6 +52,18 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type=None):
         "หมี่หยก": {"Sweetness Level": 0.5, "Sourness Level": 1.5, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
         "วุ้นเส้น": {"Sweetness Level": 0.5, "Sourness Level": 1.5, "Saltiness Level": 1.5, "Spiciness Level": 0.75}
     }
+    noodle_dry = {
+        "เส้นเล็ก": {"Sweetness Level": 0.5, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
+        "เส้นใหญ่": {"Sweetness Level": 0.25, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
+        "หมี่ขาว": {"Sweetness Level": 0.25, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
+        "หมี่เหลือง": {"Sweetness Level": 0.5, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
+        "หมี่หยก": {"Sweetness Level": 0.5, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
+        "วุ้นเส้น": {"Sweetness Level": 0.5, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1}
+    }
+    
+   
+    if noodle_type == "แห้ง":
+        noodle_flavors = noodle_dry.get(noodle_type, {})
     if soup_type == "น้ำใส":
         noodle_flavors = noodle_clear_broth.get(noodle_type, {})
     elif soup_type == "น้ำข้น":
@@ -59,17 +72,32 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type=None):
         noodle_flavors = noodle_guay_teow_nam_tok.get(noodle_type, {})
     elif soup_type == "น้ำต้มยำ":
         noodle_flavors = noodle_tom_yum.get(noodle_type, {})
+        
+    noodle_flavors_by_type = noodle_flavors.get(soup_type, {}).get(noodle_type, {})
+    
+    if health_conditions:
+            if "โรคเบาหวาน" in health_conditions or "โรคอ้วน" in health_conditions:
+                noodle_flavors_by_type["Sweetness Level"] = min(noodle_flavors_by_type.get("Sweetness Level", 0), 1)
+            if "โรคความดันโลหิตสูง" in health_conditions or "โรคไต" in health_conditions:
+                noodle_flavors_by_type["Sourness Level"] = min(noodle_flavors_by_type.get("Sourness Level", 0), 1)
+            if "โรคกรดไหลย้อน" in health_conditions:
+                noodle_flavors_by_type["Saltiness Level"] = min(noodle_flavors_by_type.get("Saltiness Level", 0), 1)
+            if "โรคกระเพาะอาหาร" in health_conditions:
+                noodle_flavors_by_type["Spiciness Level"] = min(noodle_flavors_by_type.get("Spiciness Level", 0), 1)
+
     recipe = {
          "Sweetness Level": {'Sugar': noodle_flavors.get("Sweetness Level", 0) * intensity},
         "Sourness Level": {'Vinegar/Tamarind': noodle_flavors.get("Sourness Level", 0) * intensity},
         "Saltiness Level": {'Fish sauce': noodle_flavors.get("Saltiness Level", 0) * intensity},
         "Spiciness Level": {'Chili paste/Flakes': noodle_flavors.get("Spiciness Level", 0) * intensity}
     }
+    
     return recipe[flavor]
-def display_recipe(flavordict, cup_size, noodle_type, soup_type):
+
+def display_recipe(flavordict, cup_size, noodle_type, soup_type=None, health_conditions=None):
     response = {}
     for flavor, level in flavordict.items():
-        ingredients = get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type)
+        ingredients = get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type, health_conditions)
         for ingredient, amount in ingredients.items():
             if ingredient in response:
                 response[ingredient] += amount

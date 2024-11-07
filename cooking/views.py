@@ -23,7 +23,8 @@ class ShowRecipeView(APIView):
     def post(self, request):
         serializer = NoodleSerializer(data=request.data)
         if serializer.is_valid():
-            response = display_recipe(request.data.get('flavors'), request.data.get('noodle_size'),request.data.get('noodle_type'), request.data.get('noodle_style'))
+            response = display_recipe(request.data.get('flavors'), request.data.get('noodle_size'),request.data.get('noodle_type'), request.data.get('noodle_style'),
+            request.data.get('health_conditions'))
             user = request.user
             if user.is_authenticated:
                 recipe = RecipeModel()
