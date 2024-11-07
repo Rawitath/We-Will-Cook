@@ -1,12 +1,28 @@
-// src/pages/HomePage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChefHat, Moon, Sun, ArrowRight, Heart, Clock, Bookmark, Star, User, Search } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { 
+  ChefHat, 
+  Moon, 
+  Sun, 
+  ArrowRight, 
+  Heart, 
+  Clock, 
+  Bookmark, 
+  Star, 
+  User,
+  Search,
+  LogIn as LoginIcon,
+  LogOut,
+  Settings,
+  History,
+  BookOpen
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import foodimage from '../assets/foodplaceholder.jpg';
 import UserMenu from '../context/UserMenu';
 
+// Constants for features section
 const features = [
   {
     icon: <Clock className="w-6 h-6 text-blue-500" />,
@@ -30,11 +46,12 @@ const features = [
   }
 ];
 
+// Sample recipe data
 const sampleRecipes = [
   {
     title: "บะหมี่หมูกรอบ",
     image: foodimage,
-    opularity: "Hot",
+    popularity: "Hot",
     time: "45 mins",
     likes: 1234
   },
@@ -60,7 +77,7 @@ const sampleRecipes = [
     likes: 3456
   }
 ];
-
+// Recipe Card Component
 const RecipeCard = ({ recipe, index }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -91,19 +108,174 @@ const RecipeCard = ({ recipe, index }) => (
   </motion.div>
 );
 
+// Start of HomePage Component
 export default function HomePage() {
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeRecipeIndex, setActiveRecipeIndex] = useState(0);
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  
+  // Check authentication status on mount
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveRecipeIndex((prev) => (prev + 1) % sampleRecipes.length);
-    }, 3000);
-    return () => clearInterval(interval);
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    
+    if (token && userData) {
+      setIsAuthenticated(true);
+      setUser(JSON.parse(userData));
+    }
   }, []);
 
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    setUser(null);
+    navigate('/');
+  };
+  // Authentication-aware header content
+  const renderHeaderContent = () => (
+    <div className="flex items-center gap-4">
+      {isAuthenticated ? (
+        <>
+          {/* User Profile Section */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex items-center gap-3"
+          >
+            <motion.div 
+              className={`relative group px-4 py-2 rounded-xl ${
+                isDarkMode 
+                  ? 'bg-gray-800 hover:bg-gray-700' 
+                  : 'bg-white/80 hover:bg-white'
+              } backdrop-blur-sm shadow-md cursor-pointer`}
+              whileHover={{ scale: 1.05 }}
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center">
+                  <span className="text-white font-semibold">
+                    {user?.name?.charAt(0)?.toUpperCase()}
+                  </span>
+                </div>
+                <span className="font-medium">
+                  {user?.name || 'User'}
+                </span>
+              </div>
+              
+              {/* Dropdown Menu */}
+              <div className="absolute right-0 top-full mt-2 w-48 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200">
+                <div className={`rounded-xl shadow-lg ${
+                  isDarkMode ? 'bg-gray-800' : 'bg-white'
+                } p-2`}>
+                  <button 
+                    onClick={() => navigate('/profile')}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700/10"
+                  >
+                    <Settings className="w-4 h-4" />
+                    <span>โปรไฟล์</span>
+                  </button>
+                  <button 
+                    onClick={() => navigate('/history')}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700/10"
+                  >
+                    <History className="w-4 h-4" />
+                    <span>ประวัติการค้นหา</span>
+                  </button>
+                  <button 
+                    onClick={() => navigate('/recipes')}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700/10"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    <span>สูตรของฉัน</span>
+                  </button>
+                  <hr className={`my-2 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} />
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-500/10 text-red-500"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>ออกจากระบบ</span>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </>
+      ) : (
+        <motion.button
+          onClick={() => navigate('/login')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl ${
+            isDarkMode 
+              ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
+              : 'bg-white/80 text-gray-700 hover:bg-white'
+          } backdrop-blur-sm shadow-md hover:shadow-lg transition-all`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <LoginIcon className="w-5 h-5" />
+          <span>เข้าสู่ระบบ</span>
+        </motion.button>
+      )}
+      <motion.button 
+        className={`p-3 rounded-xl transition-all duration-300 ${
+          isDarkMode 
+            ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
+            : 'bg-white/80 text-gray-700 hover:bg-white'
+        } backdrop-blur-sm shadow-md hover:shadow-lg`}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={toggleTheme}
+      >
+        {isDarkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+      </motion.button>
+    </div>
+  );
+
+  // Authentication-aware action buttons
+  const renderActionButtons = () => (
+    <div className="space-y-4">
+      {!isAuthenticated ? (
+        <>
+          <motion.button
+            onClick={() => navigate('/register')}
+            className="w-full px-6 py-4 rounded-xl font-medium bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <User className="w-5 h-5" />
+            สมัครสมาชิกฟรี
+          </motion.button>
+
+          <motion.button
+            onClick={() => navigate('/customize')}
+            className={`w-full px-6 py-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
+              isDarkMode 
+                ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
+                : 'bg-white/80 hover:bg-white text-gray-700'
+            } backdrop-blur-sm shadow-md hover:shadow-lg`}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            ทดลองใช้งาน
+            <ArrowRight className="w-5 h-5" />
+          </motion.button>
+        </>
+      ) : (
+        <motion.button
+          onClick={() => navigate('/customize')}
+          className="w-full px-6 py-4 rounded-xl font-medium bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          เริ่มปรุงก๋วยเตี๋ยวของคุณ
+          <ArrowRight className="w-5 h-5" />
+        </motion.button>
+      )}
+    </div>
+  );
   return (
     <div className={`min-h-screen transition-all duration-500 ${
       isDarkMode 
@@ -111,6 +283,7 @@ export default function HomePage() {
         : 'bg-gradient-to-br from-orange-50 via-pink-50 to-orange-100 text-gray-800'
     }`}>
       <div className="max-w-6xl mx-auto p-6">
+        {/* Header */}
         <motion.header 
           className="flex justify-between items-center mb-12"
           initial={{ y: -20, opacity: 0 }}
@@ -125,20 +298,10 @@ export default function HomePage() {
               We Will Cook
             </h1>
           </motion.div>
-          <motion.button 
-            className={`p-3 rounded-xl transition-all duration-300 ${
-              isDarkMode 
-                ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
-                : 'bg-white/80 text-gray-700 hover:bg-white'
-            } backdrop-blur-sm shadow-md hover:shadow-lg`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={toggleTheme}
-          >
-            {isDarkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-          </motion.button>
+          {renderHeaderContent()}
         </motion.header>
 
+        {/* Main Content */}
         <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
           <motion.div 
             className="space-y-8"
@@ -146,12 +309,21 @@ export default function HomePage() {
             animate={{ opacity: 1, x: 0 }}
           >
             <div className="space-y-4">
-              <h2 className="text-4xl font-bold">"วันนี้กินก๋วยเตี๋ยวอะไรดีน้า"</h2>
+              <h2 className="text-4xl font-bold">
+                {isAuthenticated 
+                  ? `สวัสดี ${user?.name || 'Chef'} วันนี้อยากทำอะไรดี?`
+                  : '"วันนี้กินก๋วยเตี๋ยวอะไรดีน้า"'
+                }
+              </h2>
               <p className="text-xl opacity-80">
-                สร้างบัญชีเพื่อปลดล็อคประสบการณ์การทำอาหารแบบส่วนตัว
+                {isAuthenticated 
+                  ? 'มาสร้างสูตรก๋วยเตี๋ยวในแบบของคุณกันเถอะ'
+                  : 'สร้างบัญชีเพื่อปลดล็อคประสบการณ์การทำอาหารแบบส่วนตัว'
+                }
               </p>
             </div>
 
+            {/* Features Grid */}
             <div className="grid grid-cols-2 gap-4">
               {features.map((feature, index) => (
                 <motion.div
@@ -170,37 +342,16 @@ export default function HomePage() {
               ))}
             </div>
 
-            <div className="space-y-4">
-            <motion.button
-            onClick={() => navigate('/register')}
-            className="w-full px-6 py-4 rounded-xl font-medium bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
-            >
-            <User className="w-5 h-5" />
-            Create Free Account
-            </motion.button>
-
-              <motion.button
-                onClick={() => navigate('/customize')}
-                className={`w-full px-6 py-4 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
-                  isDarkMode 
-                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
-                    : 'bg-white/80 hover:bg-white text-gray-700'
-                } backdrop-blur-sm shadow-md hover:shadow-lg`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Continue as Guest
-                <ArrowRight className="w-5 h-5" />
-              </motion.button>
-            </div>
+            {/* Action Buttons */}
+            {renderActionButtons()}
           </motion.div>
 
+          {/* Right Side Content */}
           <motion.div
             className="relative h-[500px] rounded-2xl overflow-hidden shadow-xl"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-
             <div className={`w-full h-full ${
               isDarkMode ? 'bg-gray-800' : 'bg-white/80'
             } backdrop-blur-sm p-6`}>
@@ -210,7 +361,11 @@ export default function HomePage() {
                     <UserMenu />
                   </div>
                   <div>
-                    <h3 className="font-semibold">โอ้ว! ยินดีต้อนรับกลับมาครับ/ค่ะ Chef!</h3>
+                    <h3 className="font-semibold">
+                      {isAuthenticated 
+                        ? `ยินดีต้อนรับกลับมา ${user?.name || 'Chef'}!`
+                        : 'โอ้ว! ยินดีต้อนรับครับ/ค่ะ Chef!'}
+                    </h3>
                     <p className="text-sm opacity-70">พร้อมที่จะปรุงอาหารบางอย่างที่น่าทึ่งหรือยัง?</p>
                   </div>
                 </div>
@@ -219,7 +374,7 @@ export default function HomePage() {
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
-                    placeholder="Search your recent recipes..."
+                    placeholder="ค้นหาสูตรก๋วยเตี๋ยวที่คุณชอบ..."
                     className={`w-full pl-12 pr-4 py-3 rounded-xl ${
                       isDarkMode ? 'bg-gray-700' : 'bg-white'
                     } border-2 border-transparent focus:border-orange-500 transition-all`}
@@ -229,7 +384,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="font-medium">Recent Searches</h4>
+                  <h4 className="font-medium">การค้นหาล่าสุด</h4>
                   <div className="grid gap-4">
                     {['เส้นเล็กน้ำใสแบบเปรี้ยวๆ', 'บะหมี่หมูกรอบต้มยำ', 'เย็นตะโฟ'].map((item, index) => (
                       <motion.div
@@ -252,12 +407,13 @@ export default function HomePage() {
           </motion.div>
         </div>
 
+        {/* Popular Recipes Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mt-12"
         >
-          <h3 className="text-2xl font-semibold mb-6">Popular Recipes</h3>
+          <h3 className="text-2xl font-semibold mb-6">สูตรยอดนิยม</h3>
           <div className="grid md:grid-cols-4 gap-6">
             {sampleRecipes.map((recipe, index) => (
               <RecipeCard key={recipe.title} recipe={recipe} index={index} />

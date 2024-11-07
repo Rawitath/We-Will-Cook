@@ -11,7 +11,7 @@ export default function LoginPage() {
   const { isDarkMode } = useTheme();
   
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
 
@@ -85,7 +85,7 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-[420px] bg-transparent border-2 border-white/20 backdrop-blur-xl rounded-lg p-8 text-white"
       >
-        <h1 className="text-4xl font-medium text-center mb-8">เข้าสู่ระบบ</h1>
+        <h1 className="text-4xl font-medium text-center mb-8">Login</h1>
 
         {error && (
           <motion.div
@@ -100,11 +100,11 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit}>
           <div className="mb-8 relative">
             <input
-              type="email"
-              placeholder="อีเมล"
+              type="username"
+              placeholder="Username"
               className="w-full h-[50px] bg-transparent border-2 border-white/20 rounded-full px-5 text-white placeholder-white outline-none focus:border-white/40 transition-colors"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              value={formData.username}
+              onChange={(e) => setFormData({...formData, username: e.target.value})}
               disabled={isLoading}
             />
             <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white" />
@@ -113,7 +113,7 @@ export default function LoginPage() {
           <div className="mb-8 relative">
             <input
               type="password"
-              placeholder="รหัสผ่าน"
+              placeholder="Password"
               className="w-full h-[50px] bg-transparent border-2 border-white/20 rounded-full px-5 text-white placeholder-white outline-none focus:border-white/40 transition-colors"
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
@@ -129,14 +129,14 @@ export default function LoginPage() {
                 className="accent-white"
                 disabled={isLoading}
               />
-              จดจำฉัน
+              Remember me
             </label>
             <Link 
               to="/forgot-password" 
               className="text-white hover:underline"
               tabIndex={isLoading ? -1 : 0}
             >
-              ลืมรหัสผ่าน?
+              Forget password?
             </Link>
           </div>
 
@@ -153,13 +153,13 @@ export default function LoginPage() {
           </motion.button>
 
           <p className="text-center text-sm">
-            ยังไม่มีบัญชี?{' '}
+            Don't have an account?{' '}
             <Link 
               to="/register" 
               className="text-white font-semibold hover:underline"
               tabIndex={isLoading ? -1 : 0}
             >
-              สมัครสมาชิก
+              Register here
             </Link>
           </p>
         </form>
