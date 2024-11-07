@@ -1,7 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserCircle, Clock, LogOut, HelpCircle, Moon } from 'lucide-react';
+import { 
+  UserCircle, 
+  History, 
+  LogOut, 
+  Settings, 
+  Moon, 
+  Sun,
+  Heart,
+  Bookmark,
+  ChefHat,
+  Book,
+  Share2,
+  HelpCircle
+} from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 export default function UserMenu() {
@@ -11,6 +24,39 @@ export default function UserMenu() {
   const { isDarkMode, toggleTheme } = useTheme();
   
   const user = JSON.parse(localStorage.getItem('user') || '{"name": "เชฟคนเก่ง", "email": "chef@email.com"}');
+
+  const menuItems = [
+    {
+      category: "โปรไฟล์",
+      items: [
+        { icon: <Settings className="w-5 h-5" />, label: "Recalibrate รสชาติ", action: () => navigate('/calibrate') },
+        { icon: <ChefHat className="w-5 h-5" />, label: "ระดับความชำนาญ", action: () => navigate('/skill-level') },
+        { icon: isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />, label: "โหมดมืด", action: toggleTheme }
+      ]
+    },
+    {
+      category: "สูตรอาหาร",
+      items: [
+        { icon: <History className="w-5 h-5" />, label: "ประวัติการปรุง", action: () => navigate('/history') },
+        { icon: <Heart className="w-5 h-5" />, label: "สูตรที่ชื่นชอบ", action: () => navigate('/favorites') },
+        { icon: <Bookmark className="w-5 h-5" />, label: "สูตรที่บันทึก", action: () => navigate('/saved') },
+        { icon: <Book className="w-5 h-5" />, label: "สูตรของฉัน", action: () => navigate('/my-recipes') }
+      ]
+    },
+    {
+      category: "อื่นๆ",
+      items: [
+        { icon: <Share2 className="w-5 h-5" />, label: "แชร์ให้เพื่อน", action: () => navigate('/share') },
+        { icon: <HelpCircle className="w-5 h-5" />, label: "วิธีใช้งาน", action: () => navigate('/help') },
+        { icon: <LogOut className="w-5 h-5" />, label: "ออกจากระบบ", action: () => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          navigate('/login');
+          setIsOpen(false);
+        }, className: "text-red-400" }
+      ]
+    }
+  ];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -23,86 +69,71 @@ export default function UserMenu() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/home');
-  };
-
-  const handleRecalibrate = () => {
-    navigate('/calibrate');
-  };
-
   return (
     <div className="relative" ref={menuRef}>
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
+        className={`p-2 rounded-xl ${
+          isDarkMode ? 'bg-gray-800' : 'bg-white/80'
+        } backdrop-blur-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2`}
       >
-        <UserCircle className="w-8 h-8" />
+        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center">
+          <span className="text-white font-semibold">
+            {user.name.charAt(0)}
+          </span>
+        </div>
+        <span className="font-medium">{user.name}</span>
       </motion.button>
 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="fixed right-4 top-16 w-64 rounded-xl shadow-xl bg-gray-800/95 backdrop-blur-lg ring-1 ring-white/10 z-50"
-            style={{ filter: 'drop-shadow(0 0 20px rgba(0,0,0,0.3))' }}
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className={`absolute right-0 top-full mt-2 w-72 rounded-xl ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white'
+            } shadow-xl ring-1 ring-black/5 z-[100]`}
+            style={{ transformOrigin: 'top right' }}
           >
-            {/* User Profile Section */}
-            <div className="px-4 py-3 border-b border-gray-700">
+            <div className="p-4 border-b border-gray-700/50">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-pink-500 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center">
                   <span className="text-xl font-bold text-white">
                     {user.name.charAt(0)}
                   </span>
                 </div>
                 <div>
-                  <p className="font-medium text-white">{user.name}</p>
-                  <p className="text-gray-400 text-sm">{user.email}</p>
+                  <p className="font-medium">{user.name}</p>
+                  <p className="text-sm opacity-60">{user.email}</p>
                 </div>
               </div>
             </div>
 
-            {/* Menu Items */}
-            <div className="p-2">
-              {/* Dark Mode Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="w-full px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg flex items-center gap-3 transition-colors"
-              >
-                <Moon className="w-5 h-5" />
-                <span>Dark Mode</span>
-              </button>
-
-              {/* Recalibrate */}
-              <button
-                onClick={handleRecalibrate}
-                className="w-full px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg flex items-center gap-3 transition-colors"
-              >
-                <HelpCircle className="w-5 h-5" />
-                <span>Recalibrate</span>
-              </button>
-              {/* History - Add this new button */}
-                <button
-                onClick={() => navigate('/history')}
-                className="w-full px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg flex items-center gap-3 transition-colors"
-                >
-                <Clock className="w-5 h-5" />
-                <span>ประวัติการปรุง</span>
-                </button>
-              {/* Logout */}
-              <button
-                onClick={handleLogout}
-                className="w-full px-3 py-2 text-red-400 hover:bg-gray-700/50 rounded-lg flex items-center gap-3 transition-colors mt-2"
-              >
-                <LogOut className="w-5 h-5" />
-                <span>ออกจากระบบ</span>
-              </button>
+            <div className="py-2">
+              {menuItems.map((category, index) => (
+                <div key={index} className="px-2">
+                  <div className="px-3 py-2 text-sm opacity-50 font-medium">
+                    {category.category}
+                  </div>
+                  {category.items.map((item, itemIndex) => (
+                    <motion.button
+                      key={itemIndex}
+                      whileHover={{ x: 4 }}
+                      onClick={item.action}
+                      className={`w-full px-3 py-2 rounded-lg flex items-center gap-3 transition-colors ${
+                        item.className || 'hover:bg-orange-500/10'
+                      }`}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </motion.button>
+                  ))}
+                </div>
+              ))}
             </div>
           </motion.div>
         )}

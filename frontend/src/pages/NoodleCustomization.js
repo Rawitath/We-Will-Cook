@@ -95,13 +95,37 @@ const prepareApiData = (noodleStyle, selectedNoodle, selectedSoup, tasteValues, 
     sweetness: tasteValues.sweet
   };
 };
-
+const bowlSizes = [
+  { 
+    id: 'small', 
+    name: 'ธรรมดา', 
+    icon: '🥣',
+    description: 'พอดีทาน เส้น 80-100 กรัม',
+    calories: '350-400 แคลอรี่'
+  },
+  { 
+    id: 'medium', 
+    name: 'พิเศษ', 
+    icon: '🍜',
+    description: 'อิ่มกำลังดี เส้น 120-150 กรัม',
+    calories: '500-600 แคลอรี่'
+  },
+  { 
+    id: 'large', 
+    name: 'จัมโบ้', 
+    icon: '🥘',
+    description: 'สำหรับคนหิวมาก เส้น 180-200 กรัม',
+    calories: '700-800 แคลอรี่'
+  }
+];
 // Main component
 export default function NoodleCustomization() {
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
   
   // State management
+  const bowlSizeRef = useRef(null);
+  const [selectedBowlSize, setSelectedBowlSize] = useState(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [noodleStyle, setNoodleStyle] = useState(null);
   const [selectedNoodle, setSelectedNoodle] = useState(null);
@@ -486,6 +510,53 @@ return (
             </motion.section>
           )}
         </AnimatePresence>
+        <AnimatePresence>
+  {selectedNoodle && (
+    <motion.section
+      ref={bowlSizeRef}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className={`${
+        isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'
+      } backdrop-blur-sm rounded-xl p-6 shadow-lg mb-6`}
+    >
+      <h2 className="text-xl font-semibold mb-4">2. เลือกขนาดชาม</h2>
+      <div className="grid grid-cols-3 gap-4">
+        {bowlSizes.map((size) => (
+          <motion.button
+            key={size.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setSelectedBowlSize(size.id)}
+            className={`flex flex-col items-center p-6 rounded-xl transition-all ${
+              selectedBowlSize === size.id
+                ? 'bg-orange-500 text-white'
+                : isDarkMode
+                  ? 'bg-gray-700 hover:bg-gray-600'
+                  : 'bg-white hover:bg-gray-50'
+            }`}
+          >
+            <span className="text-3xl mb-2">{size.icon}</span>
+            <h3 className="font-semibold mb-1">{size.name}</h3>
+            <p className={`text-sm text-center ${
+              selectedBowlSize === size.id ? 'text-white/90' : 'opacity-75'
+            }`}>
+              {size.description}
+            </p>
+            <span className={`text-xs mt-2 ${
+              selectedBowlSize === size.id ? 'text-white/80' : 'opacity-60'
+            }`}>
+              {size.calories}
+            </span>
+          </motion.button>
+        ))}
+      </div>
+    </motion.section>
+  )}
+</AnimatePresence>
         {/* Taste Preferences */}
         <AnimatePresence>
           {selectedNoodle && (noodleStyle === 'dry' || selectedSoup) && (

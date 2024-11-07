@@ -27,13 +27,14 @@ const questions = [
   },
   {
     id: 2,
-    question: "คุณชอบน้ำซุปแบบไหน?",
+    question: "คุณชอบความหวานระดับไหน?",
     icon: <Soup className="w-6 h-6 text-blue-500" />,
     options: [
-      { value: 'clear', label: "น้ำซุปใส" },
-      { value: 'tomyum', label: "ต้มยำ" },
-      { value: 'creamy', label: "น้ำข้น" },
-      { value: 'spicy', label: "เผ็ด" }
+      { value: 1, label: "จืด" },
+      { value: 2, label: "หวานเล็กน้อย" },
+      { value: 3, label: "หวานปานกลาง" },
+      { value: 4, label: "หวานมาก" },
+      { value: 5, label: "หวานตัดขา" },
     ]
   },
   {
@@ -44,11 +45,22 @@ const questions = [
       { value: 1, label: "จืด" },
       { value: 2, label: "เค็มน้อย" },
       { value: 3, label: "เค็มกำลังดี" },
-      { value: 4, label: "เค็มมาก" }
+      { value: 4, label: "เค็มมาก" },
+      { value: 5, label: "ไตพัง" },
     ]
-  },
-  // Add more questions as needed
-];
+    },
+    {
+    id: 4,
+    question: "ระดับความเปรี้ยวที่คุณชอบ?",
+    icon: <FishSymbol className="w-6 h-6 text-yellow-500" />,
+    options: [
+      { value: 1, label: "จืด" },
+      { value: 2, label: "เปรียวน้อย" },
+      { value: 3, label: "เปรี้ยวกำลังดี" },
+      { value: 4, label: "แซ่บอีหลี" }
+    ]
+},
+]
 
 export default function CalibrationPage() {
   const navigate = useNavigate();
