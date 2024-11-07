@@ -66,16 +66,10 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type=None):
         "Spiciness Level": {'Chili paste/Flakes': noodle_flavors.get("Spiciness Level", 0) * intensity}
     }
     return recipe[flavor]
-def display_recipe(flavordict, cup_size, noodle_type, soup_type=None):
-    cup_sizes = {
-        'เล็ก': 1,
-        'กลาง': 1.5,
-        'ใหญ่': 2
-    }
-    cup_multiplier = cup_sizes.get(cup_size, 1)
+def display_recipe(flavordict, cup_size, noodle_type, soup_type):
     response = {}
     for flavor, level in flavordict.items():
-        ingredients = get_noodle_recipe(flavor, level, cup_multiplier, noodle_type, soup_type)
+        ingredients = get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type)
         for ingredient, amount in ingredients.items():
             if ingredient in response:
                 response[ingredient] += amount
