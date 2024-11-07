@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
+import UserMenu from '../context/UserMenu';
 
 // Constants for noodle styles
 const noodleStyles = [
@@ -34,7 +35,7 @@ const noodleStyles = [
   }
 ];
 
-
+// Constants for noodle types
 const noodleTypes = [
   { id: 'sen-lek', name: 'เส้นเล็ก', icon: '🍜', description: 'เส้นเล็กนุ่ม ทานง่าย' },
   { id: 'sen-yai', name: 'เส้นใหญ่', icon: '🍜', description: 'เส้นใหญ่เหนียวนุ่ม' },
@@ -77,13 +78,30 @@ const tastePreferences = [
   { id: 'spicy', name: 'ความเผ็ด', icon: '🌶️', description: 'ระดับความเผ็ดร้อน' },
   { id: 'salty', name: 'ความเค็ม', icon: '🧂', description: 'ระดับความเค็มกำลังดี' },
   { id: 'sour', name: 'ความเปรี้ยว', icon: '🍋', description: 'ระดับความเปรี้ยว' },
-  { id: 'sweet', name: 'ความหวาน', icon: '🍯', description: 'ระดับความหวาน' },
+  { id: 'sweet', name: 'ความหวาน', icon: '🍯', description: 'ระดับความหวาน' }
 ];
+// Helper function to prepare API data
+const prepareApiData = (noodleStyle, selectedNoodle, selectedSoup, tasteValues, noodleTypes, soupTypes) => {
+  const selectedNoodleType = noodleTypes.find(n => n.id === selectedNoodle);
+  const selectedSoupType = soupTypes.find(s => s.id === selectedSoup);
+
+  return {
+    style: noodleStyle === 'soup' ? 'น้ำ' : 'แห้ง',
+    noodleType: selectedNoodleType ? selectedNoodleType.name : '',
+    soupType: selectedSoupType ? selectedSoupType.name : '',
+    spiciness: tasteValues.spicy,
+    saltiness: tasteValues.salty,
+    sourness: tasteValues.sour,
+    sweetness: tasteValues.sweet
+  };
+};
+
+// Main component
 export default function NoodleCustomization() {
   const navigate = useNavigate();
+  const { isDarkMode, toggleTheme } = useTheme();
   
   // State management
-  const { isDarkMode, toggleTheme } = useTheme();
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [noodleStyle, setNoodleStyle] = useState(null);
   const [selectedNoodle, setSelectedNoodle] = useState(null);
@@ -101,6 +119,32 @@ export default function NoodleCustomization() {
   const noodleRef = useRef(null);
   const soupRef = useRef(null);
   const tasteRef = useRef(null);
+
+  // Helper function for theme classes
+  const getThemeClasses = (selected) => {
+    const baseClasses = "p-4 rounded-lg flex flex-col items-center justify-center gap-2 transition-all";
+    if (selected) {
+      return `${baseClasses} ${isDarkMode ? 'bg-orange-500' : 'bg-orange-500'} text-white`;
+    }
+    return `${baseClasses} ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'}`;
+  };
+
+  // Navigation handler
+  const handleNavigateToSummary = () => {
+    const data = prepareApiData(
+      noodleStyle,
+      selectedNoodle,
+      selectedSoup,
+      tasteValues,
+      noodleTypes,
+      soupTypes
+    );
+    navigate('/summary', { 
+      state: { 
+        customization: data 
+      }
+    });
+  };
 
   // Enhanced Magic Menu Generator
   const generateMagicPreferences = () => {
@@ -121,29 +165,29 @@ export default function NoodleCustomization() {
       setTimeout(() => setSelectedSoup(randomSoup), 900);
     }
 
-    // Generate time-based taste preferences with fixed values
+    // Generate time-based taste preferences
     if (timeOfDay < 11) {
       preferences = {
-        spicy: 25,  // Mild
-        salty: 50,  // Medium
-        sour: 25,   // Mild
-        sweet: 25,  // Mild
+        spicy: 25,
+        salty: 50,
+        sour: 25,
+        sweet: 25,
         message: "🌅 เมนูเช้าแบบกลมกล่อม ทานง่าย เพิ่มพลังให้วันนี้!"
       };
     } else if (timeOfDay < 15) {
       preferences = {
-        spicy: 75,  // Spicy
-        salty: 50,  // Medium
-        sour: 50,   // Medium
-        sweet: 0,   // Not sweet
+        spicy: 75,
+        salty: 50,
+        sour: 50,
+        sweet: 0,
         message: "🌞 เมนูกลางวันจัดจ้าน เผ็ดร้อนสะใจ แก้ง่วงยามบ่าย!"
       };
     } else {
       preferences = {
-        spicy: 50,  // Medium
-        salty: 50,  // Medium
-        sour: 25,   // Mild
-        sweet: 25,  // Mild
+        spicy: 50,
+        salty: 50,
+        sour: 25,
+        sweet: 25,
         message: "🌙 เมนูเย็นรสกลมกล่อม อร่อยสบายท้อง พร้อมพักผ่อน"
       };
     }
@@ -164,161 +208,154 @@ export default function NoodleCustomization() {
     document.body.appendChild(messageElement);
     setTimeout(() => messageElement.remove(), 3000);
   };
-
-  // Scroll functions
-  const scrollToRef = (ref) => {
-    if (ref.current) {
-      ref.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
-    }
+// Effect hooks
+useEffect(() => {
+  const handleScroll = () => {
+    setShowBackToTop(window.scrollY > 400);
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
+  window.addEventListener('scroll', handleScroll);
+  return () => window.removeEventListener('scroll', handleScroll);
+}, []);
+
+// Auto-scroll effect when noodleStyle changes
+useEffect(() => {
+  if (noodleStyle) {
+    setTimeout(() => scrollToRef(noodleRef), 300);
+  }
+}, [noodleStyle]);
+
+// Auto-scroll effect when selectedNoodle changes
+useEffect(() => {
+  if (selectedNoodle && noodleStyle === 'soup') {
+    setTimeout(() => scrollToRef(soupRef), 300);
+  }
+}, [selectedNoodle, noodleStyle]);
+
+// Auto-scroll effect when selectedSoup changes
+useEffect(() => {
+  if ((selectedSoup && noodleStyle === 'soup') || (selectedNoodle && noodleStyle === 'dry')) {
+    setTimeout(() => scrollToRef(tasteRef), 300);
+  }
+}, [selectedSoup, selectedNoodle, noodleStyle]);
+
+// Scroll helper function
+const scrollToRef = (ref) => {
+  if (ref.current) {
+    ref.current.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
     });
-  };
+  }
+};
 
-  // Theme helper function
-  const getThemeClasses = (selected) => {
-    const baseClasses = "p-4 rounded-lg flex flex-col items-center justify-center gap-2 transition-all";
-    if (selected) {
-      return `${baseClasses} ${isDarkMode ? 'bg-orange-500' : 'bg-orange-500'} text-white`;
-    }
-    return `${baseClasses} ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'}`;
-  };
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+};
 
-  // Scroll detection
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowBackToTop(window.scrollY > 400);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Auto-scroll effects
-  useEffect(() => {
-    if (noodleStyle) {
-      setTimeout(() => scrollToRef(noodleRef), 300);
-    }
-  }, [noodleStyle]);
-
-  useEffect(() => {
-    if (selectedNoodle && noodleStyle === 'soup') {
-      setTimeout(() => scrollToRef(soupRef), 300);
-    }
-  }, [selectedNoodle, noodleStyle]);
-
-  useEffect(() => {
-    if ((selectedSoup && noodleStyle === 'soup') || (selectedNoodle && noodleStyle === 'dry')) {
-      setTimeout(() => scrollToRef(tasteRef), 300);
-    }
-  }, [selectedSoup, selectedNoodle, noodleStyle]);
-  return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDarkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100' 
-        : 'bg-gradient-to-br from-orange-50 via-pink-50 to-orange-100 text-gray-800'
-    }`}>
-      <div className="max-w-4xl mx-auto p-6">
-        {/* Header */}
-        <header className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => navigate('/')}
-              className={`p-2 rounded-full ${
-                isDarkMode ? 'bg-gray-800' : 'bg-white/80'
-              } shadow-md hover:shadow-lg transition-all`}
-            >
-              <ChevronLeft className="w-6 h-6 text-gray-600" />
-            </motion.button>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
-              ปรุงก๋วยเตี๋ยวในแบบของคุณ
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={toggleTheme}
-              className={`p-2 rounded-full ${
-                isDarkMode ? 'bg-gray-800 text-yellow-500' : 'bg-white/80 text-gray-600'
-              } shadow-md hover:shadow-lg transition-all`}
-            >
-              {isDarkMode ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
-            </motion.button>
-            <UserCircle className={`w-8 h-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />
-          </div>
-        </header>
-
-        {/* Magic Button */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={generateMagicPreferences}
-          className={`w-full mb-6 px-6 py-4 bg-gradient-to-r ${
-            isDarkMode
-              ? 'from-purple-600 to-pink-600'
-              : 'from-purple-500 to-pink-500'
-          } text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group`}
-        >
-          <motion.div
-            animate={{
-              rotate: [0, 360],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "linear"
-            }}
+return (
+  <div className={`min-h-screen transition-colors duration-300 ${
+    isDarkMode 
+      ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100' 
+      : 'bg-gradient-to-br from-orange-50 via-pink-50 to-orange-100 text-gray-800'
+  }`}>
+    <div className="max-w-4xl mx-auto p-6">
+      {/* Header */}
+      <header className="flex justify-between items-center mb-8">
+        <div className="flex items-center gap-4">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => navigate('/')}
+            className={`p-2 rounded-full ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white/80'
+            } shadow-md hover:shadow-lg transition-all`}
           >
-            <Sparkles className="w-5 h-5" />
-          </motion.div>
-          <span className="relative">
-            ✨ ให้เราแนะนำเมนูที่ใช่สำหรับคุณ
-          </span>
-          <motion.div
-            animate={{
-              rotate: [0, -360],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          >
-            <Sparkles className="w-5 h-5" />
-          </motion.div>
-        </motion.button>
-
-        {/* Search Bar */}
-        <div className="relative mb-8">
-          <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-400'
-          }`} />
-          <input
-            type="text"
-            placeholder="ค้นหาเมนูที่คุณชอบ..."
-            className={`w-full pl-12 pr-4 py-3 rounded-xl ${
-              isDarkMode 
-                ? 'bg-gray-800/50 text-white'
-                : 'bg-white/80'
-            } backdrop-blur-sm shadow-lg border-2 border-transparent focus:border-orange-500 transition-all`}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+            <ChevronLeft className="w-6 h-6 text-gray-600" />
+          </motion.button>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
+            ปรุงก๋วยเตี๋ยวในแบบของคุณ
+          </h1>
         </div>
-        {/* Noodle Style Selection */}
-        <motion.section
+        <div className="flex items-center gap-4">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={toggleTheme}
+            className={`p-2 rounded-full ${
+              isDarkMode ? 'bg-gray-800 text-yellow-500' : 'bg-white/80 text-gray-600'
+            } shadow-md hover:shadow-lg transition-all`}
+          >
+            {isDarkMode ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
+          </motion.button>
+          <UserMenu />
+        </div>
+      </header>
+
+      {/* Magic Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={generateMagicPreferences}
+        className={`w-full mb-6 px-6 py-4 bg-gradient-to-r ${
+          isDarkMode
+            ? 'from-purple-600 to-pink-600'
+            : 'from-purple-500 to-pink-500'
+        } text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group`}
+      >
+        <motion.div
+          animate={{
+            rotate: [0, 360],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        >
+          <Sparkles className="w-5 h-5" />
+        </motion.div>
+        <span className="relative">
+          ✨ ให้เราแนะนำเมนูที่ใช่สำหรับคุณ
+        </span>
+        <motion.div
+          animate={{
+            rotate: [0, -360],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        >
+          <Sparkles className="w-5 h-5" />
+        </motion.div>
+      </motion.button>
+
+      {/* Search Bar */}
+      <div className="relative mb-8">
+        <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${
+          isDarkMode ? 'text-gray-400' : 'text-gray-400'
+        }`} />
+        <input
+          type="text"
+          placeholder="ค้นหาเมนูที่คุณชอบ..."
+          className={`w-full pl-12 pr-4 py-3 rounded-xl ${
+            isDarkMode 
+              ? 'bg-gray-800/50 text-white'
+              : 'bg-white/80'
+          } backdrop-blur-sm shadow-lg border-2 border-transparent focus:border-orange-500 transition-all`}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+      {/* Noodle Style Selection */}
+      <motion.section
           ref={styleRef}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -521,47 +558,24 @@ export default function NoodleCustomization() {
           )}
         </AnimatePresence>
 
-        {/* Submit Button */}
-        <AnimatePresence>
-          {selectedNoodle && (noodleStyle === 'dry' || selectedSoup) && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex justify-end"
+        {/* Summary Navigation Button */}
+        {selectedNoodle && (noodleStyle === 'dry' || selectedSoup) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-end"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleNavigateToSummary}
+              className={`px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center gap-2`}
             >
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  const data = {
-                    noodleStyle,
-                    noodleType: selectedNoodle,
-                    soupType: selectedSoup,
-                    tastePreferences: tasteValues,
-                  };
-                  console.log('บันทึกความชอบ:', data);
-                  
-                  const messageElement = document.createElement('div');
-                  messageElement.className = 'fixed top-4 right-4 bg-white/90 text-gray-800 p-4 rounded-lg shadow-lg z-50 animate-fade-in';
-                  messageElement.innerHTML = `
-                    <div class="flex items-center gap-2">
-                      <span class="animate-bounce">✨</span>
-                      บันทึกความชอบของคุณแล้ว!
-                      <span class="animate-bounce">✨</span>
-                    </div>
-                  `;
-                  document.body.appendChild(messageElement);
-                  setTimeout(() => messageElement.remove(), 3000);
-                }}
-                className="px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
-              >
-                บันทึกรสชาติที่ชอบ
-                <ChevronRight className="w-5 h-5" />
-              </motion.button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              ดูสรุปสูตรของคุณ
+              <ChevronRight className="w-5 h-5" />
+            </motion.button>
+          </motion.div>
+        )}
 
         {/* Back to Top Button */}
         <AnimatePresence>
@@ -586,6 +600,7 @@ export default function NoodleCustomization() {
             </motion.button>
           )}
         </AnimatePresence>
+
       </div>
     </div>
   );

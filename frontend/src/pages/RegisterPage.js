@@ -1,61 +1,78 @@
 // src/pages/RegisterPage.js
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 import { User, Mail, Lock } from 'lucide-react';
+import axios from 'axios';
 import backgroundImage from '../assets/food-4k.jpg';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { isDarkMode } = useTheme();
+
+  // State สำหรับเก็บข้อมูลฟอร์ม
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: ''
   });
-  
-  // Separate error states to match original implementation
-  const [nameError, setNameError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passError, setPassError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let hasError = false;
+  // State สำหรับเก็บ error แยกแต่ละฟิลด์
+  const [errors, setErrors] = useState({
+    username: '',
+    email: '',
+    password: ''
+  });
+
+  // State สำหรับ loading
+  const [isLoading, setIsLoading] = useState(false);
+
+  // ฟังก์ชันตรวจสอบความถูกต้อง
+  const validateForm = () => {
+    const newErrors = {};
     
-    // Reset all error messages first
-    setNameError('');
-    setEmailError('');
-    setPassError('');
-
-    // Username validation
+    // ตรวจสอบ username
     if (formData.username === '' || formData.username == null) {
-      setNameError("Name is required");
-      hasError = true;
+      newErrors.username = "Name is required";
     }
 
-    // Email validation - using exact same regex from original
+    // ตรวจสอบ email
     const email_check = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
     if (!formData.email.match(email_check)) {
-      setEmailError("Valid Email is required");
-      hasError = true;
+      newErrors.email = "Valid Email is required";
     }
 
-    // Password validation - same order as original script
+    // ตรวจสอบ password
     if (formData.password.length <= 5) {
-      setPassError("Password must be more than 6 characters");
-      hasError = true;
-    }
-    else if (formData.password.length >= 20) {
-      setPassError("Password cannot be more than 20 characters");
-      hasError = true;
-    }
-    else if (formData.password === 'password') {
-      setPassError("Password cannot be password");
-      hasError = true;
+      newErrors.password = "Password must be more than 6 characters";
+    } else if (formData.password.length >= 20) {
+      newErrors.password = "Password cannot be more than 20 characters";
+    } else if (formData.password === 'password') {
+      newErrors.password = "Password cannot be password";
     }
 
-    // If no errors, you can proceed (e.g., navigate to login)
-    if (!hasError) {
-      navigate('/login');
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // ฟังก์ชันส่งข้อมูล
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (validateForm()) {
+      setIsLoading(true);
+      try {
+        const response = await axios.post('YOUR_API_ENDPOINT/register', formData);
+        console.log('Registration successful:', response.data);
+        navigate('/login'); // ไปหน้า login เมื่อ register สำเร็จ
+      } catch (err) {
+        setErrors({
+          ...errors,
+          general: err.response?.data?.message || 'Registration failed. Please try again.'
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -67,10 +84,15 @@ export default function RegisterPage() {
       <div className="w-[420px] bg-transparent border-2 border-white/20 backdrop-blur-xl rounded-lg p-8 text-white">
         <h1 className="text-4xl font-medium text-center mb-8">Register</h1>
 
-        <form id="form" onSubmit={handleSubmit}>
+        {errors.general && (
+          <div className="mb-4 p-3 rounded bg-red-500/20 text-red-200 text-sm">
+            {errors.general}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
           <div className="mb-8 relative">
             <input
-              id="username"
               type="text"
               placeholder="Username"
               className="w-full h-[50px] bg-transparent border-2 border-white/20 rounded-full px-5 text-white placeholder-white outline-none"
@@ -78,16 +100,15 @@ export default function RegisterPage() {
               onChange={(e) => setFormData({...formData, username: e.target.value})}
             />
             <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white" />
-            {nameError && (
-              <span id="name_error" className="text-red-500 text-sm block mt-1 ml-4">
-                {nameError}
+            {errors.username && (
+              <span className="text-red-500 text-sm block mt-1 ml-4">
+                {errors.username}
               </span>
             )}
           </div>
 
           <div className="mb-8 relative">
             <input
-              id="email"
               type="email"
               placeholder="Email"
               className="w-full h-[50px] bg-transparent border-2 border-white/20 rounded-full px-5 text-white placeholder-white outline-none"
@@ -95,16 +116,15 @@ export default function RegisterPage() {
               onChange={(e) => setFormData({...formData, email: e.target.value})}
             />
             <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white" />
-            {emailError && (
-              <span id="email_error" className="text-red-500 text-sm block mt-1 ml-4">
-                {emailError}
+            {errors.email && (
+              <span className="text-red-500 text-sm block mt-1 ml-4">
+                {errors.email}
               </span>
             )}
           </div>
 
           <div className="mb-8 relative">
             <input
-              id="password"
               type="password"
               placeholder="Password"
               className="w-full h-[50px] bg-transparent border-2 border-white/20 rounded-full px-5 text-white placeholder-white outline-none"
@@ -112,18 +132,19 @@ export default function RegisterPage() {
               onChange={(e) => setFormData({...formData, password: e.target.value})}
             />
             <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white" />
-            {passError && (
-              <span id="pass_error" className="text-red-500 text-sm block mt-1 ml-4">
-                {passError}
+            {errors.password && (
+              <span className="text-red-500 text-sm block mt-1 ml-4">
+                {errors.password}
               </span>
             )}
           </div>
 
           <button
             type="submit"
-            className="w-full h-[45px] rounded-full bg-white text-gray-900 font-semibold text-lg mb-6 hover:shadow-lg transition-shadow"
+            disabled={isLoading}
+            className="w-full h-[45px] rounded-full bg-white text-gray-900 font-semibold text-lg mb-6 hover:shadow-lg transition-shadow disabled:opacity-50"
           >
-            Register
+            {isLoading ? 'Creating Account...' : 'Register'}
           </button>
         </form>
 

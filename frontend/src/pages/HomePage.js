@@ -5,6 +5,7 @@ import { ChefHat, Moon, Sun, ArrowRight, Heart, Clock, Bookmark, Star, User, Sea
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import foodimage from '../assets/foodplaceholder.jpg';
+import UserMenu from '../context/UserMenu';
 
 const features = [
   {
@@ -206,7 +207,7 @@ export default function HomePage() {
               <div className="space-y-6">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center">
-                    <User className="w-6 h-6 text-white" />
+                    <UserMenu />
                   </div>
                   <div>
                     <h3 className="font-semibold">โอ้ว! ยินดีต้อนรับกลับมาครับ/ค่ะ Chef!</h3>
