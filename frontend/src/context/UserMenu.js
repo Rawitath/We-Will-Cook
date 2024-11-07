@@ -30,7 +30,7 @@ export default function UserMenu() {
       category: "โปรไฟล์",
       items: [
         { icon: <Settings className="w-5 h-5" />, label: "Recalibrate รสชาติ", action: () => navigate('/calibrate') },
-        { icon: <ChefHat className="w-5 h-5" />, label: "ระดับความชำนาญ", action: () => navigate('/skill-level') },
+        { icon: <ChefHat className="w-5 h-5" />, label: "ระดับความชำนาญ", action: () => navigate('/coming-soon') },
         { icon: isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />, label: "โหมดมืด", action: toggleTheme }
       ]
     },
@@ -38,16 +38,16 @@ export default function UserMenu() {
       category: "สูตรอาหาร",
       items: [
         { icon: <History className="w-5 h-5" />, label: "ประวัติการปรุง", action: () => navigate('/history') },
-        { icon: <Heart className="w-5 h-5" />, label: "สูตรที่ชื่นชอบ", action: () => navigate('/favorites') },
-        { icon: <Bookmark className="w-5 h-5" />, label: "สูตรที่บันทึก", action: () => navigate('/saved') },
-        { icon: <Book className="w-5 h-5" />, label: "สูตรของฉัน", action: () => navigate('/my-recipes') }
+        { icon: <Heart className="w-5 h-5" />, label: "สูตรที่ชื่นชอบ", action: () => navigate('/coming-soon') },
+        { icon: <Bookmark className="w-5 h-5" />, label: "สูตรที่บันทึก", action: () => navigate('/coming-soon') },
+        { icon: <Book className="w-5 h-5" />, label: "สูตรของฉัน", action: () => navigate('/coming-soon') }
       ]
     },
     {
       category: "อื่นๆ",
       items: [
-        { icon: <Share2 className="w-5 h-5" />, label: "แชร์ให้เพื่อน", action: () => navigate('/share') },
-        { icon: <HelpCircle className="w-5 h-5" />, label: "วิธีใช้งาน", action: () => navigate('/help') },
+        { icon: <Share2 className="w-5 h-5" />, label: "แชร์ให้เพื่อน", action: () => navigate('/coming-soon') },
+        { icon: <HelpCircle className="w-5 h-5" />, label: "วิธีใช้งาน", action: () => navigate('/coming-soon') },
         { icon: <LogOut className="w-5 h-5" />, label: "ออกจากระบบ", action: () => {
           localStorage.removeItem('token');
           localStorage.removeItem('user');

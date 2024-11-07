@@ -7,8 +7,10 @@ import {
   ArrowLeft, 
   Heart,
   Download,
-  Coffee,
-  UserCircle
+  Scale,
+  Drumstick,
+  Soup,
+  ChefHat
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import UserMenu from '../context/UserMenu';
@@ -19,7 +21,6 @@ export default function NoodleSummary() {
     const { isDarkMode } = useTheme();
     
     const customization = location.state?.customization || {
-      // Default values if no data passed
       style: "น้ำ",
       noodleType: "เส้นเล็ก",
       soupType: "ต้มยำ",
@@ -29,19 +30,35 @@ export default function NoodleSummary() {
       sweetness: 25
     };
 
+    // Calculate recipe portions based on taste preferences
+    const calculateRecipe = () => {
+      const basePortions = {
+        noodles: "100 กรัม",
+        soup_base: "500 มล.",
+        protein: "80 กรัม",
+        seasonings: {
+          fish_sauce: `${Math.round(customization.saltiness * 0.15)} ช้อนชา`,
+          lime_juice: `${Math.round(customization.sourness * 0.2)} ช้อนชา`,
+          chili: `${Math.round(customization.spiciness * 0.1)} ช้อนชา`,
+          sugar: `${Math.round(customization.sweetness * 0.1)} ช้อนชา`
+        }
+      };
+
+      return basePortions;
+    };
+
+    const recipe = calculateRecipe();
+
     const handleSave = () => {
-      // Save to user's favorites/history
       alert("บันทึกสูตรเรียบร้อยแล้ว!");
     };
 
     const handleShare = () => {
-      // Generate shareable link
       navigator.clipboard.writeText("https://example.com/shared-recipe/123");
       alert("คัดลอกลิงก์สำหรับแชร์แล้ว!");
     };
 
     const handleDownload = () => {
-      // Generate PDF or image of recipe
       alert("กำลังดาวน์โหลดสูตรของคุณ...");
     };
 
@@ -80,7 +97,7 @@ export default function NoodleSummary() {
                         สรุปสูตรก๋วยเตี๋ยวของคุณ
                     </h1>
 
-                    <div className="grid grid-cols-2 gap-6 mb-8">
+                    <div className="grid md:grid-cols-2 gap-6 mb-8">
                         <div className={`p-4 rounded-lg ${
                             isDarkMode ? 'bg-gray-700/50' : 'bg-white/50'
                         }`}>
@@ -142,7 +159,7 @@ export default function NoodleSummary() {
                     </div>
                 </motion.div>
 
-                {/* Recommendations */}
+                {/* Recipe Results */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -151,25 +168,36 @@ export default function NoodleSummary() {
                         isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'
                     } backdrop-blur-sm shadow-xl`}
                 >
-                    <h2 className="text-xl font-semibold mb-4">คุณอาจจะชอบ</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {[
-                            'ต้มยำน้ำข้น',
-                            'เย็นตาโฟ',
-                            'ก๋วยเตี๋ยวต้มยำหมูสับ'
-                        ].map((recipe) => (
-                            <motion.div
-                                key={recipe}
-                                whileHover={{ scale: 1.02 }}
-                                className={`p-4 rounded-lg ${
-                                    isDarkMode ? 'bg-gray-700' : 'bg-white'
-                                } cursor-pointer hover:shadow-lg transition-all`}
-                            >
-                                <Coffee className="w-6 h-6 mb-2 text-orange-500" />
-                                <h3 className="font-medium">{recipe}</h3>
-                                <p className="text-sm opacity-75">คล้ายกับสูตรของคุณ</p>
-                            </motion.div>
-                        ))}
+                    <h2 className="text-xl font-semibold mb-6">ผลลัพธ์</h2>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div className={`p-4 rounded-lg ${
+                            isDarkMode ? 'bg-gray-700/50' : 'bg-white/50'
+                        }`}>
+                            <h3 className="font-medium mb-4 flex items-center gap-2">
+                                <Scale className="w-5 h-5 text-orange-500" />
+                                วัตถุดิบหลัก
+                            </h3>
+                            <div className="space-y-2">
+                                <p>เส้น: {recipe.noodles}</p>
+                                <p>น้ำซุป: {recipe.soup_base}</p>
+                                <p>เนื้อสัตว์: {recipe.protein}</p>
+                            </div>
+                        </div>
+
+                        <div className={`p-4 rounded-lg ${
+                            isDarkMode ? 'bg-gray-700/50' : 'bg-white/50'
+                        }`}>
+                            <h3 className="font-medium mb-4 flex items-center gap-2">
+                                <ChefHat className="w-5 h-5 text-orange-500" />
+                                เครื่องปรุง
+                            </h3>
+                            <div className="space-y-2">
+                                <p>น้ำปลา: {recipe.seasonings.fish_sauce}</p>
+                                <p>น้ำมะนาว: {recipe.seasonings.lime_juice}</p>
+                                <p>พริก: {recipe.seasonings.chili}</p>
+                                <p>น้ำตาล: {recipe.seasonings.sugar}</p>
+                            </div>
+                        </div>
                     </div>
                 </motion.div>
             </div>

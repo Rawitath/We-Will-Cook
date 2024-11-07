@@ -521,7 +521,7 @@ return (
         isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'
       } backdrop-blur-sm rounded-xl p-6 shadow-lg mb-6`}
     >
-      <h2 className="text-xl font-semibold mb-4">2. เลือกขนาดชาม</h2>
+      <h2 className="text-xl font-semibold mb-4">4. เลือกขนาดชาม</h2>
       <div className="grid grid-cols-3 gap-4">
         {bowlSizes.map((size) => (
           <motion.button
@@ -570,7 +570,7 @@ return (
               } backdrop-blur-sm rounded-xl p-6 shadow-lg mb-6`}
             >
               <h2 className="text-xl font-semibold mb-4">
-                {noodleStyle === 'dry' ? '3.' : '4.'} ปรับแต่งรสชาติ
+                {noodleStyle === 'dry' ? '3.' : '5.'} ปรับแต่งรสชาติ
               </h2>
               <div className="space-y-8">
                 {tastePreferences.map((taste, index) => (

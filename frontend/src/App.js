@@ -10,6 +10,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import NoodleSummary from './pages/NoodleSummary'; // Add this import
 import CalibrationPage from './pages/CalibrationPage';
 import HistoryPage from './pages/HistoryPage';
+import ComingSoonPage from './pages/ComingSoonPage';
 
 export default function App() {
   return (
@@ -25,6 +26,8 @@ export default function App() {
           <Route path="/calibrate" element={<CalibrationPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/coming-soon" element={<ComingSoonPage />} />
+          
         </Routes>
       </Router>
     </ThemeProvider>
