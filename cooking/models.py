@@ -20,11 +20,16 @@ class TastePrefModel(models.Model):
     tastes = models.JSONField()
     # WIP naja
 
+import datetime
+
 class RecipeModel(models.Model):
-    userid = models.UUIDField(default=uuid.uuid4())
+    userid = models.UUIDField()
     name = models.CharField(max_length=256)
+    description = models.JSONField()
     condiments = models.JSONField()
     is_favorite = models.BooleanField(default=False)
+    is_collection = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=datetime.datetime.now())
     collection_name = models.CharField(default='My Collection', max_length=256)
     def set_condiments(self, condiments_dict):
         import json

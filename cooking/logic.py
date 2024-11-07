@@ -60,30 +60,19 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type=None, heal
         "หมี่หยก": {"Sweetness Level": 0.5, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
         "วุ้นเส้น": {"Sweetness Level": 0.5, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1}
     }
-    
+
+    noodle_flavors = {}
    
-    if noodle_type == "แห้ง":
-        noodle_flavors = noodle_dry.get(noodle_type, {})
+    if soup_type == "แห้ง":
+        noodle_flavors = noodle_dry.get(noodle_type)
     if soup_type == "น้ำใส":
-        noodle_flavors = noodle_clear_broth.get(noodle_type, {})
+        noodle_flavors = noodle_clear_broth.get(noodle_type)
     elif soup_type == "น้ำข้น":
-        noodle_flavors = noodle_guay_teow_nam_khon.get(noodle_type, {})
+        noodle_flavors = noodle_guay_teow_nam_khon.get(noodle_type)
     elif soup_type == "น้ำตก":
-        noodle_flavors = noodle_guay_teow_nam_tok.get(noodle_type, {})
+        noodle_flavors = noodle_guay_teow_nam_tok.get(noodle_type)
     elif soup_type == "น้ำต้มยำ":
-        noodle_flavors = noodle_tom_yum.get(noodle_type, {})
-        
-    noodle_flavors_by_type = noodle_flavors.get(soup_type, {}).get(noodle_type, {})
-    
-    if health_conditions:
-            if "โรคเบาหวาน" in health_conditions or "โรคอ้วน" in health_conditions:
-                noodle_flavors_by_type["Sweetness Level"] = min(noodle_flavors_by_type.get("Sweetness Level", 0), 1)
-            if "โรคความดันโลหิตสูง" in health_conditions or "โรคไต" in health_conditions:
-                noodle_flavors_by_type["Sourness Level"] = min(noodle_flavors_by_type.get("Sourness Level", 0), 1)
-            if "โรคกรดไหลย้อน" in health_conditions:
-                noodle_flavors_by_type["Saltiness Level"] = min(noodle_flavors_by_type.get("Saltiness Level", 0), 1)
-            if "โรคกระเพาะอาหาร" in health_conditions:
-                noodle_flavors_by_type["Spiciness Level"] = min(noodle_flavors_by_type.get("Spiciness Level", 0), 1)
+        noodle_flavors = noodle_tom_yum.get(noodle_type)
 
     recipe = {
          "Sweetness Level": {'Sugar': noodle_flavors.get("Sweetness Level", 0) * intensity},
@@ -92,9 +81,19 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type=None, heal
         "Spiciness Level": {'Chili paste/Flakes': noodle_flavors.get("Spiciness Level", 0) * intensity}
     }
     
+    if health_conditions:
+            if "โรคเบาหวาน" in health_conditions or "โรคอ้วน" in health_conditions:
+                recipe["Sweetness Level"][list(recipe["Sweetness Level"].keys())[0]] = min(recipe["Sweetness Level"][list(recipe["Sweetness Level"].keys())[0]], 1)
+            if "โรคความดันโลหิตสูง" in health_conditions or "โรคไต" in health_conditions:
+                recipe["Saltiness Level"][list(recipe["Saltiness Level"].keys())[0]] = min(recipe["Saltiness Level"][list(recipe["Saltiness Level"].keys())[0]], 1)
+            if "โรคกรดไหลย้อน" in health_conditions: #ห้ามกินเปริ้ยวและเผ็ด
+                recipe["Sourness Level"][list(recipe["Sourness Level"].keys())[0]] = min(recipe["Sourness Level"][list(recipe["Sourness Level"].keys())[0]], 1)
+                recipe["Spiciness Level"][list(recipe["Spiciness Level"].keys())[0]] = min(recipe["Spiciness Level"][list(recipe["Spiciness Level"].keys())[0]], 1)
+            if "โรคกระเพาะอาหาร" in health_conditions:
+                recipe["Spiciness Level"][list(recipe["Spiciness Level"].keys())[0]] = min(recipe["Sourness Level"][list(recipe["Spiciness Level"].keys())[0]], 1)
     return recipe[flavor]
 
-def display_recipe(flavordict, cup_size, noodle_type, soup_type=None, health_conditions=None):
+def display_recipe(flavordict, cup_size, noodle_type, soup_type, health_conditions=None):
     response = {}
     for flavor, level in flavordict.items():
         ingredients = get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type, health_conditions)

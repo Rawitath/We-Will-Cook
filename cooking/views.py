@@ -29,6 +29,8 @@ class ShowRecipeView(APIView):
             if user.is_authenticated:
                 recipe = RecipeModel()
                 recipe.userid = user.userid
+                recipe.name = f"{request.data.get('noodle_type')}{request.data.get('noodle_style')}"
+                recipe.description = request.data
                 recipe.condiments = response
                 recipe.save()
             return Response(response, status=status.HTTP_200_OK)
@@ -38,6 +40,9 @@ class GetUserRecipeView(APIView):
     permission_classes=[permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     def get(self, request):
-        recipe = RecipeModel.objects.get(userid=request.user.userid)
-        serializer = RecipeSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        recipes = RecipeModel.objects.filter(userid=request.user.userid)
+        response = {}
+        for i in range(len(recipes)):
+            serializer = RecipeSerializer(recipes[i])
+            response.update({i:serializer.data})
+        return Response(response, status=status.HTTP_200_OK)
