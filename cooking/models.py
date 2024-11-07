@@ -1,5 +1,5 @@
 from django.db import models
-import uuid
+import json
 
 # Create your models here.
 
@@ -16,9 +16,11 @@ class CondimentModel(models.Model):
 
 class TastePrefModel(models.Model):
     userid = models.UUIDField(unique=True, primary_key=True)
-    # Tastes is kept as dict parsed to json
-    tastes = models.JSONField()
-    # WIP naja
+    sweet_offset = models.FloatField(default=1)
+    salty_offset = models.FloatField(default=1)
+    sour_offset = models.FloatField(default=1)
+    spicy_offset = models.FloatField(default=1)
+    health_conditions = models.Field(default=list())
 
 import datetime
 
@@ -29,7 +31,7 @@ class RecipeModel(models.Model):
     condiments = models.JSONField()
     is_favorite = models.BooleanField(default=False)
     is_collection = models.BooleanField(default=False)
-    created_at = models.DateTimeField(default=datetime.datetime.now())
+    created_at = models.DateTimeField()
     collection_name = models.CharField(default='My Collection', max_length=256)
     def set_condiments(self, condiments_dict):
         import json

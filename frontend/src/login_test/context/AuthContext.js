@@ -80,7 +80,7 @@ export const AuthProvider = ({children}) => {
     );
     }
     let changepassword = (password, resetToken) => {
-        axios.post(api_url+'reset-password/',{
+        axios.put(api_url+'reset-password/',{
             'password':password
         },{
             headers: 
