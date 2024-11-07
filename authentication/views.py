@@ -7,11 +7,12 @@ from .models import *
 from .serializer import *
 from .validators import *
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from cooking.models import TastePrefModel
 
 from django.core.mail import send_mail
 from django.conf import settings
 # Create your views here.
-from django.contrib.auth.models import User
+
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework.permissions import IsAuthenticated
@@ -26,6 +27,8 @@ class WWCRegisterView(APIView):
             if serializer.is_valid(raise_exception=True):
                 user = serializer.create(validated_data, True)
                 if user:
+                    taste_pref = TastePrefModel()
+                    taste_pref.save()
                     from_email = settings.EMAIL_HOST_USER
                     to_email = [user.email]
                     subject = f"Dear {user.username}, Your Account Has Been Created!"
@@ -105,7 +108,7 @@ class WWCResetPassword(APIView):
         else:
             return Response({'Reset password link is invalid or expired.'},status=status.HTTP_401_UNAUTHORIZED)
 
-    def post(self, request):
+    def put(self, request):
         validated_data = request.data
         if validate_password(request.data.get('password')) != None:
             validated_data = validate_password(request.data.get('password'))
