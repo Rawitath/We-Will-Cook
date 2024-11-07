@@ -20,7 +20,7 @@ class TastePrefModel(models.Model):
     salty_offset = models.FloatField(default=1)
     sour_offset = models.FloatField(default=1)
     spicy_offset = models.FloatField(default=1)
-    health_conditions = models.Field(default=list())
+    health_conditions = models.JSONField(default=list())
 
 import datetime
 

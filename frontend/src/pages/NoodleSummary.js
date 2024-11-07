@@ -20,32 +20,50 @@ export default function NoodleSummary() {
     const location = useLocation();
     const { isDarkMode } = useTheme();
     
-    const customization = location.state?.customization || {
-      style: "น้ำ",
-      noodleType: "เส้นเล็ก",
-      soupType: "ต้มยำ",
-      spiciness: 75,
-      saltiness: 50,
-      sourness: 75,
-      sweetness: 25
-    };
+    const customization = location.state?.customization 
+    noodle_style = "แห้ง";
+    if (customization.selectedSoup != "แห้ง"){
+        noodle_style = customization.selectedSoup;
+    }
+    request = 
+    {
+        "noodle_style":noodle_style,
+        "noodle_type":customization.selectedNoodle,
+        "noodle_size":2,
+        "flavors":
+        {
+        "Sweetness Level": "75",
+        "Sourness Level": "25",
+        "Saltiness Level": "50",
+        "Spiciness Level": "100"
+        }
+    }
+    // || {
+    //   style: "น้ำ",
+    //   noodleType: "เส้นเล็ก",
+    //   soupType: "ต้มยำ",
+    //   spiciness: 75,
+    //   saltiness: 50,
+    //   sourness: 75,
+    //   sweetness: 25
+    // };
 
     // Calculate recipe portions based on taste preferences
-    const calculateRecipe = () => {
-      const basePortions = {
-        noodles: "100 กรัม",
-        soup_base: "500 มล.",
-        protein: "80 กรัม",
-        seasonings: {
-          fish_sauce: `${Math.round(customization.saltiness * 0.15)} ช้อนชา`,
-          lime_juice: `${Math.round(customization.sourness * 0.2)} ช้อนชา`,
-          chili: `${Math.round(customization.spiciness * 0.1)} ช้อนชา`,
-          sugar: `${Math.round(customization.sweetness * 0.1)} ช้อนชา`
-        }
-      };
+    // const calculateRecipe = () => {
+    //   const basePortions = {
+    //     noodles: "100 กรัม",
+    //     soup_base: "500 มล.",
+    //     protein: "80 กรัม",
+    //     seasonings: {
+    //       fish_sauce: `${Math.round(customization.saltiness * 0.15)} ช้อนชา`,
+    //       lime_juice: `${Math.round(customization.sourness * 0.2)} ช้อนชา`,
+    //       chili: `${Math.round(customization.spiciness * 0.1)} ช้อนชา`,
+    //       sugar: `${Math.round(customization.sweetness * 0.1)} ช้อนชา`
+    //     }
+    //   };
 
-      return basePortions;
-    };
+    //   return basePortions;
+    // };
 
     const recipe = calculateRecipe();
 

@@ -14,7 +14,7 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type, health_co
         intensity = 2
     if soup_type == "น้ำตก" and intensity > 2:
         intensity = 2
-    if soup_type == "น้ำต้มยำ" and intensity > 2:
+    if soup_type == "ต้มยำ" and intensity > 2:
         intensity = 2
     if soup_type == "แห้ง" and intensity > 2:
         intensity = 2
@@ -70,7 +70,7 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type, health_co
         noodle_flavors = noodle_guay_teow_nam_khon.get(noodle_type)
     elif soup_type == "น้ำตก":
         noodle_flavors = noodle_guay_teow_nam_tok.get(noodle_type)
-    elif soup_type == "น้ำต้มยำ":
+    elif soup_type == "ต้มยำ":
         noodle_flavors = noodle_tom_yum.get(noodle_type)
 
     recipe = {

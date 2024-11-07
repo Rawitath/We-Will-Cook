@@ -11,24 +11,28 @@ import NoodleSummary from './pages/NoodleSummary'; // Add this import
 import CalibrationPage from './pages/CalibrationPage';
 import HistoryPage from './pages/HistoryPage';
 import ComingSoonPage from './pages/ComingSoonPage';
+import { AuthProvider } from './context/AuthContext';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 export default function App() {
   return (
     <ThemeProvider>
       <Router>
+        <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/customize" element={<NoodleCustomization />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/summary" element={<NoodleSummary />} /> {/* Add this route */}
           <Route path="/calibrate" element={<CalibrationPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
-          
         </Routes>
+        </AuthProvider>
       </Router>
     </ThemeProvider>
   );

@@ -1,14 +1,40 @@
 // src/pages/RegisterPage.js
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { User, Mail, Lock } from 'lucide-react';
 import axios from 'axios';
 import backgroundImage from '../assets/food-4k.jpg';
+import AuthContext from '../context/AuthContext';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { isDarkMode } = useTheme();
+
+  let [user,setUser] = useState(0);
+  const {api_url} = useContext(AuthContext);
+  const {token} = useContext(AuthContext);
+  const {setToken} = useContext(AuthContext);
+  useEffect(() => {
+    axios.get(api_url, 
+        {
+            headers: 
+            {
+                Authorization: `Bearer ${token != null ? token.access : null}`
+            }
+        }).then((response) =>{
+            if(response.status === 200){
+                setUser(response.data);
+            }
+        }
+        ).catch((response) =>{
+            console.error(response.data);
+        }
+        );
+}, []);
+  if(user != 0){
+    navigate('/');
+  }
 
   // State สำหรับเก็บข้อมูลฟอร์ม
   const [formData, setFormData] = useState({
@@ -42,14 +68,19 @@ export default function RegisterPage() {
       newErrors.email = "Valid Email is required";
     }
 
-    // ตรวจสอบ password
-    if (formData.password.length <= 5) {
-      newErrors.password = "Password must be more than 6 characters";
-    } else if (formData.password.length >= 20) {
-      newErrors.password = "Password cannot be more than 20 characters";
-    } else if (formData.password === 'password') {
-      newErrors.password = "Password cannot be password";
+    function containsNumber(str) {
+      // Check if the string contains any digit between 0 and 9
+      return /\d/.test(str);
     }
+    // ตรวจสอบ password
+    if (formData.password.length <= 7) {
+      newErrors.password = "Password must be more than 8 characters";
+    } else if (formData.password.length >= 128) {
+      newErrors.password = "Password cannot be more than 128 characters";
+    } else if (formData.password == formData.password.toUpperCase ||
+       formData.password == formData.password.toLowerCase() || !containsNumber(formData.password)){
+        newErrors.password = "The password requires at least 8 characters long with at least 1 lowercase and uppercase and number.";
+       }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -61,18 +92,17 @@ export default function RegisterPage() {
     
     if (validateForm()) {
       setIsLoading(true);
-      try {
-        const response = await axios.post('YOUR_API_ENDPOINT/register', formData);
-        console.log('Registration successful:', response.data);
-        navigate('/login'); // ไปหน้า login เมื่อ register สำเร็จ
-      } catch (err) {
+      axios.post(api_url+'register/', formData).then((response) => {
+        navigate('/login');
+      }).catch((response, err) =>{
+        console.error(response);
         setErrors({
           ...errors,
           general: err.response?.data?.message || 'Registration failed. Please try again.'
         });
-      } finally {
+      }).finally(() => {
         setIsLoading(false);
-      }
+      });
     }
   };
 

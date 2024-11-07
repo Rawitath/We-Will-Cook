@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ChefHat, 
@@ -17,6 +17,10 @@ import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import UserMenu from '../context/UserMenu';
 import foodimage from '../assets/foodplaceholder.jpg';
+
+import axios from 'axios';
+import AuthContext from '../context/AuthContext';
+
 
 // Constants for features section
 const features = [
@@ -112,18 +116,30 @@ export default function HomePage() {
   const { isDarkMode, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-  
+  const [user, setUser] = useState(0);
+  const {api_url} = useContext(AuthContext);
+  const {token} = useContext(AuthContext);
   // Check authentication status on mount
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
-    if (token && userData) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(userData));
-    }
-  }, []);
+    axios.get(api_url, 
+        {
+            headers: 
+            {
+                Authorization: `Bearer ${token != null ? token.access : null}`
+            }
+        }).then((response) =>{
+            if(response.status === 200){
+                setUser(response.data);
+                setIsAuthenticated(true);
+            }
+        }
+        ).catch((response) =>{
+            console.error(response.data);
+            setIsAuthenticated(false);
+        }
+        );
+}, []);
 
   // Authentication-aware header content
   const renderHeaderContent = () => (
@@ -243,7 +259,7 @@ export default function HomePage() {
             <div className="space-y-4">
               <h2 className="text-4xl font-bold">
                 {isAuthenticated 
-                  ? `สวัสดี ${user?.name || 'Chef'} วันนี้อยากทำอะไรดี?`
+                  ? `สวัสดี ${user?.username || 'Chef'} วันนี้อยากทำอะไรดี?`
                   : '"วันนี้กินก๋วยเตี๋ยวอะไรดีน้า"'
                 }
               </h2>
@@ -294,7 +310,7 @@ export default function HomePage() {
                   <div>
                     <h3 className="font-semibold">
                       {isAuthenticated 
-                        ? `ยินดีต้อนรับกลับมา ${user?.name || 'Chef'}!`
+                        ? `ยินดีต้อนรับกลับมา ${user?.username || 'Chef'}!`
                         : 'โอ้ว! ยินดีต้อนรับครับ/ค่ะ Chef!'}
                     </h3>
                     <p className="text-sm opacity-70">พร้อมที่จะปรุงอาหารบางอย่างที่น่าทึ่งหรือยัง?</p>
