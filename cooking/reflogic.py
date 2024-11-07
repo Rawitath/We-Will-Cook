@@ -21,16 +21,16 @@ def display_recipe(flavordict, cup_size):
     return response
 
 # Input Example
-{
-    "noodle_style":"น้ำใส",
-    "noodle_type":"หมี่เหลือง",
-    "noodle_size":1.5,
-    "health_conditions":"โรคกรดไหลย้อน",
-    "flavors":
-    {
-        "Sweetness Level": "75",
-        "Sourness Level": "25",
-        "Saltiness Level": "50",
-        "Spiciness Level": "0"    
-    }
-}
+# {
+#     "noodle_style":"น้ำใส",
+#     "noodle_type":"หมี่เหลือง",
+#     "noodle_size":1.5,
+#     "health_conditions":"โรคกรดไหลย้อน",
+#     "flavors":
+#     {
+#         "Sweetness Level": "75",
+#         "Sourness Level": "25",
+#         "Saltiness Level": "50",
+#         "Spiciness Level": "0"    
+#     }
+# }
