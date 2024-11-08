@@ -43,7 +43,7 @@ export default function UserMenu() {
             }
         }
         ).catch((response) =>{
-            console.error(response.data);
+            console.log('User not authenticated. Continuing in Guest mode');
         }
         );
 }, []);

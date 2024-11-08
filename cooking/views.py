@@ -18,7 +18,7 @@ class TastePrefView(APIView):
         return Response(serializer.data)
 
 class ShowRecipeView(APIView):
-    permission_classes=[permissions.AllowAny]
+    permission_classes=[permissions.AllowAny,]
     authentication_classes=[JWTAuthentication]
     def post(self, request):
         serializer = NoodleSerializer(data=request.data)
@@ -46,11 +46,14 @@ class CalibrateView(APIView):
     def put(self, request):
         user = request.user
         taste_pref = TastePrefModel.objects.get(userid=user.userid)
-        taste_pref.sweet_offset = request.data.get('sweet_offset')
-        taste_pref.salty_offset = request.data.get('sweet_offset')
-        taste_pref.sour_offset_offset = request.data.get('sweet_offset')
-        taste_pref.spicy_offset = request.data.get('sweet_offset')
-        taste_pref.health_conditions = request.data.get('health_conditions')
+        taste_pref.sweet_offset = request.data.get('2')
+        taste_pref.salty_offset = request.data.get('3')
+        taste_pref.sour_offset_offset = request.data.get('4')
+        taste_pref.spicy_offset = request.data.get('1')
+        taste_pref.health_conditions = []
+        for i in range(5, 9):
+            if request.data.get(f"{i}") != "":
+                taste_pref.health_conditions.append(request.data.get(f"{i}"))
         taste_pref.save()
         return Response("Calibration Complete", status=status.HTTP_200_OK)
 
@@ -59,10 +62,10 @@ class UserRecipeView(APIView):
     authentication_classes = [JWTAuthentication]
     def get(self, request):
         recipes = RecipeModel.objects.filter(userid=request.user.userid)
-        response = {}
+        response = []
         for i in range(len(recipes)):
             serializer = RecipeSerializer(recipes[i])
-            response.update(serializer.data)
+            response.append(serializer.data)
         return Response(response, status=status.HTTP_200_OK)
     def delete(self, request):
         recipes = RecipeModel.objects.filter(userid=request.user.userid, pk=request.data.get('recipe_id'))

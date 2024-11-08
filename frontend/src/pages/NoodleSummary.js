@@ -43,13 +43,16 @@ export default function NoodleSummary() {
     //   return basePortions;
     // };
     console.log(apidata);
-    useEffect(() => {axios.post('http://127.0.0.1:8000/cooking/recipe/', apidata, 
-        {
+    let header = {headers:{}}
+    if(token != null){
+        header = {
             headers: 
             {
-                Authorization: `Bearer ${token != null ? token.access : null}`
+                Authorization: `Bearer ${token.access}`
             }
         }
+    }
+    useEffect(() => {axios.post('http://127.0.0.1:8000/cooking/recipe/', apidata, header
     ).then((response) => {
         setRecipe(response.data);
     })},[]);

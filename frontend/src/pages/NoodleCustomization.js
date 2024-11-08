@@ -85,7 +85,7 @@ const prepareApiData = (noodleStyle, selectedNoodle, selectedSoup, bowlSize, tas
   const selectedNoodleType = noodleTypes.find(n => n.id === selectedNoodle);
   const selectedSoupType = soupTypes.find(s => s.id === selectedSoup);
   let noodle_style = "แห้ง";
-    if (selectedSoup != "แห้ง"){
+    if (noodleStyle != "dry"){
         noodle_style = selectedSoupType ? selectedSoupType.name : '';
     }
     const size_dict = {
@@ -225,6 +225,9 @@ export default function NoodleCustomization() {
       setTimeout(() => setSelectedSoup(randomSoup), 900);
     }
 
+    const randomBowl = bowlSizes[Math.floor(Math.random() * bowlSizes.length)].id;
+    setTimeout(() => setSelectedBowlSize(randomBowl), 1200);
+
     // Generate time-based taste preferences
     if (timeOfDay < 11) {
       preferences = {
@@ -253,7 +256,7 @@ export default function NoodleCustomization() {
     }
 
     // Apply the preferences
-    setTimeout(() => setTasteValues(preferences), 1200);
+    setTimeout(() => setTasteValues(preferences), 1500);
 
     // Show recommendation message
     const messageElement = document.createElement('div');

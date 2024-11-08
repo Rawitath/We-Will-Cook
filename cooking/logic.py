@@ -22,7 +22,7 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type, health_co
     noodle_clear_broth = {
         "เส้นเล็ก": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "เส้นใหญ่": {"Sweetness Level": 0.25, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
-        "หมี่ขาว": {"Sweetness Level": 0.25, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
+        "เส้นหมี่": {"Sweetness Level": 0.25, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "บะหมี่": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "บะหมี่หยก": {"Sweetness Level": 0.25, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "วุ้นเส้น": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25}
@@ -30,7 +30,7 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type, health_co
     noodle_guay_teow_nam_khon = {
         "เส้นเล็ก": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
         "เส้นใหญ่": {"Sweetness Level": 0.25, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
-        "หมี่ขาว": {"Sweetness Level": 0.5, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
+        "เส้นหมี่": {"Sweetness Level": 0.5, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
         "บะหมี่": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
         "บะหมี่หยก": {"Sweetness Level": 1.25, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
         "วุ้นเส้น": {"Sweetness Level": 1.5, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.75}
@@ -38,7 +38,7 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type, health_co
     noodle_guay_teow_nam_tok = {
         "เส้นเล็ก": {"Sweetness Level": 0.5, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "เส้นใหญ่": {"Sweetness Level": 0.5, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
-        "หมี่ขาว": {"Sweetness Level": 0.75, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
+        "เส้นหมี่": {"Sweetness Level": 0.75, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "บะหมี่": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
         "บะหมี่หยก": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25},
         "วุ้นเส้น": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.25}
@@ -47,14 +47,14 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type, health_co
         "เส้นเล็ก": {"Sweetness Level": 1, "Sourness Level": 1.5, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
         "เส้นใหญ่": {"Sweetness Level": 0.5, "Sourness Level": 1.5, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
         "บะหมี่": {"Sweetness Level": 1, "Sourness Level": 0.75, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
-        "หมี่ขาว": {"Sweetness Level": 0.25, "Sourness Level": 1.5, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
+        "เส้นหมี่": {"Sweetness Level": 0.25, "Sourness Level": 1.5, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
         "บะหมี่หยก": {"Sweetness Level": 0.5, "Sourness Level": 1.5, "Saltiness Level": 1.5, "Spiciness Level": 0.75},
         "วุ้นเส้น": {"Sweetness Level": 0.5, "Sourness Level": 1.5, "Saltiness Level": 1.5, "Spiciness Level": 0.75}
     }
     noodle_dry = {
         "เส้นเล็ก": {"Sweetness Level": 0.5, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
         "เส้นใหญ่": {"Sweetness Level": 0.25, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
-        "หมี่ขาว": {"Sweetness Level": 0.25, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
+        "เส้นหมี่": {"Sweetness Level": 0.25, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
         "บะหมี่": {"Sweetness Level": 0.5, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
         "บะหมี่หยก": {"Sweetness Level": 0.5, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1},
         "วุ้นเส้น": {"Sweetness Level": 0.5, "Sourness Level": 0.5, "Saltiness Level": 2, "Spiciness Level": 1}
@@ -89,7 +89,7 @@ def get_noodle_recipe(flavor, level, cup_size, noodle_type, soup_type, health_co
             recipe["Sourness Level"][list(recipe["Sourness Level"].keys())[0]] = min(recipe["Sourness Level"][list(recipe["Sourness Level"].keys())[0]], 1)
             recipe["Spiciness Level"][list(recipe["Spiciness Level"].keys())[0]] = min(recipe["Spiciness Level"][list(recipe["Spiciness Level"].keys())[0]], 1)
         if "โรคกระเพาะอาหาร" in health_condition:
-            recipe["Spiciness Level"][list(recipe["Spiciness Level"].keys())[0]] = min(recipe["Sourness Level"][list(recipe["Spiciness Level"].keys())[0]], 1)
+            recipe["Spiciness Level"][list(recipe["Spiciness Level"].keys())[0]] = min(recipe["Spiciness Level"][list(recipe["Spiciness Level"].keys())[0]], 1)
     return recipe[flavor]
 
 def display_recipe(flavordict, cup_size, noodle_type, soup_type, taste_pref):

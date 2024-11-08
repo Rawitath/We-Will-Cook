@@ -52,30 +52,15 @@ export const AuthProvider = ({children}) => {
         });
     }
 
-    
-    
-    let changepassword = (password, resetToken) => {
-        axios.put(api_url+'reset-password/',{
-            'password':password
-        },{
-            headers: 
-            {
-                Authorization: `Bearer ${resetToken}`
-            }
-        }).then((response) => {
-            navigate('/login');
-        })
-    }
     let contextData = {
         api_url:api_url,
         token:token,
         setToken:setToken,
         register:register,
         updatetoken:updatetoken,
-        changepassword:changepassword
     }
     useEffect(() => {
-        const refreshMinute = 2 * 60 * 1000;
+        const refreshMinute = 1.5 * 60 * 1000;
         let interval = setInterval(() => {
             if(token){
                 updatetoken();

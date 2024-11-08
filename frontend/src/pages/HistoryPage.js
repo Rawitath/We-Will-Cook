@@ -23,6 +23,7 @@ export default function HistoryPage() {
   let [user,setUser] = useState(0);
   const {api_url} = useContext(AuthContext);
   const {token} = useContext(AuthContext);
+  const [recipes, setRecipes] = useState([]);
   useEffect(() => {
     axios.get(api_url, 
         {
@@ -41,43 +42,41 @@ export default function HistoryPage() {
         }
         );
 }, []);
-  const [rawrecipes,setrawRecipes] = useState([])
   useEffect(() => {axios.get('http://127.0.0.1:8000/cooking/userrecipe/', {headers: 
     {
         Authorization: `Bearer ${token != null ? token.access : null}`}
     }).then((response) => {
-      console.log(response.data);
-      setrawRecipes(response.data);
+      setRecipes(response.data);
     }
     )}, []);
   
-  const recipes = [
-    {
-      id: 1,
-      name: "เส้นเล็กต้มยำน้ำข้น",
-      date: "2024-03-15",
-      spiciness: 80,
-      isFavorite: true,
-      isSaved: true
-    },
-    {
-      id: 2,
-      name: "บะหมี่น้ำใสหมูกรอบ",
-      date: "2024-03-14",
-      spiciness: 40,
-      isFavorite: false,
-      isSaved: true
-    },
-    {
-      id: 3,
-      name: "บะหมี่น้ำใสหมูกรอบ",
-      date: "2024-03-14",
-      spiciness: 40,
-      isFavorite: false,
-      isSaved: true
-    },
-    // Add more recipes
-  ];
+  // const recipes = [
+  //   {
+  //     id: 1,
+  //     name: "เส้นเล็กต้มยำน้ำข้น",
+  //     date: "2024-03-15",
+  //     spiciness: 80,
+  //     isFavorite: true,
+  //     isSaved: true
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "บะหมี่น้ำใสหมูกรอบ",
+  //     date: "2024-03-14",
+  //     spiciness: 40,
+  //     isFavorite: false,
+  //     isSaved: true
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "บะหมี่น้ำใสหมูกรอบ",
+  //     date: "2024-03-14",
+  //     spiciness: 40,
+  //     isFavorite: false,
+  //     isSaved: true
+  //   },
+  //   // Add more recipes
+  // ];
 
   return (
     <div className={`min-h-screen ${
@@ -170,7 +169,7 @@ export default function HistoryPage() {
                 <div>
                   <h3 className="font-semibold text-lg mb-2">{recipe.name}</h3>
                   <p className="text-sm opacity-70">
-                    {new Date(recipe.date).toLocaleDateString('th-TH', {
+                    {new Date(recipe.created_at).toLocaleDateString('th-TH', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric'
@@ -178,10 +177,10 @@ export default function HistoryPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
-                  {recipe.isFavorite && (
+                  {recipe.is_favorite && (
                     <Heart className="w-5 h-5 text-red-500 fill-current" />
                   )}
-                  {recipe.isSaved && (
+                  {recipe.is_saved && (
                     <Bookmark className="w-5 h-5 text-blue-500 fill-current" />
                   )}
                 </div>

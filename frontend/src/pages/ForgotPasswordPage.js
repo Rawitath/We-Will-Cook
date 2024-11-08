@@ -28,9 +28,9 @@ export default function ForgotPasswordPage() {
       setSuccessMessage('Reset link sent! Please check your email.');
       
       // Reset and redirect after success
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      // setTimeout(() => {
+      //   navigate('/login');
+      // }, 2000);
       
     } catch (error) {
       console.error(error);

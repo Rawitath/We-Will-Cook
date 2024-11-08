@@ -1,5 +1,5 @@
 // src/pages/CalibrationPage.js
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -8,9 +8,11 @@ import {
   FishSymbol, 
   Soup,
   Coffee,
-  Scale
+  Scale,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import AuthContext from '../context/AuthContext';
+import axios from 'axios';
 
 const questions = [
   {
@@ -18,11 +20,11 @@ const questions = [
     question: "คุณชอบความเผ็ดระดับไหน?",
     icon: <Flame className="w-6 h-6 text-red-500" />,
     options: [
-      { value: 1, label: "ไม่เผ็ดเลย" },
-      { value: 2, label: "เผ็ดน้อย" },
-      { value: 3, label: "เผ็ดปานกลาง" },
-      { value: 4, label: "เผ็ดมาก" },
-      { value: 5, label: "เผ็ดที่สุด" }
+      { value: 0, label: "ไม่เผ็ดเลย" },
+      { value: 0.5, label: "เผ็ดน้อย" },
+      { value: 1, label: "เผ็ดปานกลาง" },
+      { value: 1.5, label: "เผ็ดมาก" },
+      { value: 2, label: "เผ็ดที่สุด" }
     ]
   },
   {
@@ -30,11 +32,11 @@ const questions = [
     question: "คุณชอบความหวานระดับไหน?",
     icon: <Soup className="w-6 h-6 text-blue-500" />,
     options: [
-      { value: 1, label: "จืด" },
-      { value: 2, label: "หวานเล็กน้อย" },
-      { value: 3, label: "หวานปานกลาง" },
-      { value: 4, label: "หวานมาก" },
-      { value: 5, label: "หวานตัดขา" },
+      { value: 0, label: "จืด" },
+      { value: 0.5, label: "หวานเล็กน้อย" },
+      { value: 1, label: "หวานปานกลาง" },
+      { value: 1.5, label: "หวานมาก" },
+      { value: 2, label: "หวานตัดขา" },
     ]
   },
   {
@@ -42,11 +44,11 @@ const questions = [
     question: "ระดับความเค็มที่คุณชอบ?",
     icon: <FishSymbol className="w-6 h-6 text-yellow-500" />,
     options: [
-      { value: 1, label: "จืด" },
-      { value: 2, label: "เค็มน้อย" },
-      { value: 3, label: "เค็มกำลังดี" },
-      { value: 4, label: "เค็มมาก" },
-      { value: 5, label: "ไตพัง" },
+      { value: 0, label: "จืด" },
+      { value: 0.5, label: "เค็มน้อย" },
+      { value: 1, label: "เค็มกำลังดี" },
+      { value: 1.5, label: "เค็มมาก" },
+      { value: 2, label: "ไตพัง" },
     ]
     },
     {
@@ -54,12 +56,49 @@ const questions = [
     question: "ระดับความเปรี้ยวที่คุณชอบ?",
     icon: <FishSymbol className="w-6 h-6 text-yellow-500" />,
     options: [
-      { value: 1, label: "จืด" },
-      { value: 2, label: "เปรียวน้อย" },
-      { value: 3, label: "เปรี้ยวกำลังดี" },
-      { value: 4, label: "แซ่บอีหลี" }
+      { value: 0, label: "จืด" },
+      { value: 0.5, label: "เปรียวน้อย" },
+      { value: 1, label: "เปรี้ยวกำลังดี" },
+      { value: 1.5, label: "เปรี้ยวมาก" },
+      { value: 2, label: "แซ่บอีหลี" }
     ]
 },
+{
+  id: 5,
+  question: "คุณเป็นโรคเบาหวานหรือโรคอ้วนหรือไม่?",
+  icon: <FishSymbol className="w-6 h-6 text-yellow-500" />,
+  options: [
+    { value: "", label: "ไม่ ฉันไม่ได้เป็น" },
+    { value: "โรคเบาหวาน", label: "ใช่ ฉันเป็นอยู่" },
+  ]
+  },
+  {
+    id: 6,
+    question: "คุณเป็นโรคความดันโลหิตสูงหรือโรคไตหรือไม่?",
+    icon: <FishSymbol className="w-6 h-6 text-yellow-500" />,
+    options: [
+      { value: "", label: "ไม่ ฉันไม่ได้เป็น" },
+    { value: "โรคความดันโลหิตสูง", label: "ใช่ ฉันเป็นอยู่" },
+    ]
+    },
+    {
+      id: 7,
+      question: "คุณเป็นโรคกรดไหลย้อนหรือไม่?",
+      icon: <FishSymbol className="w-6 h-6 text-yellow-500" />,
+      options: [
+        { value: "", label: "ไม่ ฉันไม่ได้เป็น" },
+    { value: "โรคกรดไหลย้อน", label: "ใช่ ฉันเป็นอยู่" },
+      ]
+      },
+      {
+        id: 8,
+        question: "คุณเป็นโรคกระเพาะอาหารหรือไม่?",
+        icon: <FishSymbol className="w-6 h-6 text-yellow-500" />,
+        options: [
+          { value: "", label: "ไม่ ฉันไม่ได้เป็น" },
+    { value: "โรคกระเพาะอาหาร", label: "ใช่ ฉันเป็นอยู่" },
+        ]
+        },
 ]
 
 export default function CalibrationPage() {
@@ -67,6 +106,28 @@ export default function CalibrationPage() {
   const { isDarkMode } = useTheme();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
+
+  let [user,setUser] = useState(0);
+  const {api_url} = useContext(AuthContext);
+  const {token} = useContext(AuthContext);
+  useEffect(() => {
+    axios.get(api_url, 
+        {
+            headers: 
+            {
+                Authorization: `Bearer ${token != null ? token.access : null}`
+            }
+        }).then((response) =>{
+            if(response.status === 200){
+                setUser(response.data);
+            }
+        }
+        ).catch((response) =>{
+            console.error(response.data);
+            navigate('/login');
+        }
+        );
+}, []);
 
   const handleAnswer = (questionId, value) => {
     setAnswers(prev => ({
@@ -77,9 +138,19 @@ export default function CalibrationPage() {
     if (currentQuestion < questions.length - 1) {
       setTimeout(() => setCurrentQuestion(prev => prev + 1), 500);
     } else {
-      // Save calibration data
-      localStorage.setItem('userPreferences', JSON.stringify(answers));
-      navigate('/customize');
+      setAnswers((prev) => {
+        const finalAnswers = { ...prev, [questionId]: value };
+        axios.put('http://127.0.0.1:8000/cooking/calibrate/', finalAnswers, 
+          {
+            headers: 
+            {
+                Authorization: `Bearer ${token != null ? token.access : null}`
+            }
+        }
+        ).then((response) => {
+          setTimeout(() => navigate('/customize'), 500);
+        })
+      });
     }
   };
 
