@@ -1,7 +1,7 @@
 # We Will Cook
 เว็บแอพที่จะทำให้การปรุงนั้นง่ายขึ้น
 
-## วิธีการลงโปรเจ็ค
+## วิธีการรันโปรเจ็ค
 **1. โคลนโปรเจ็คด้วย**
 ```console
 git clone https://github.com/Rawitath/We-Will-Cook.git
