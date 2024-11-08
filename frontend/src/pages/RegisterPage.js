@@ -17,6 +17,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const {setToken} = useContext(AuthContext);
 
   useEffect(() => {
     if (token) {
@@ -65,8 +66,21 @@ export default function RegisterPage() {
           email,
           password
         });
-        setIsLoading('success');
-        setTimeout(() => navigate('/login'), 1000);
+        //setTimeout(() => navigate('/login'), 1000);
+        axios.post(api_url+'login/',{
+          username,
+          password
+        }).then((response)=>{
+          if(response.status === 200){
+            localStorage.setItem('auth_token', JSON.stringify(response.data));
+            setToken(response.data);
+            // Success animation before redirect
+            setIsLoading('success');
+            // Redirect after success animation
+            setTimeout(() => {
+            navigate('/calibrate');
+            }, 1000);
+        }});
       } catch (err) {
         setErrors(prev => ({
           ...prev,

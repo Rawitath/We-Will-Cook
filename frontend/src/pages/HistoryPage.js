@@ -42,7 +42,7 @@ export default function HistoryPage() {
         }
         );
 }, []);
-  useEffect(() => {axios.get('https://we-will-cook.vercel.app/cooking/userrecipe/', {headers: 
+  useEffect(() => {axios.get('https://wwcsystem.vercel.app/cooking/userrecipe/', {headers: 
     {
         Authorization: `Bearer ${token != null ? token.access : null}`}
     }).then((response) => {
