@@ -1,5 +1,5 @@
 // src/pages/HistoryPage.js
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { 
   ChevronLeft,
@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import axios from 'axios';
+import AuthContext from '../context/AuthContext';
 
 export default function HistoryPage() {
   const navigate = useNavigate();
@@ -18,7 +20,37 @@ export default function HistoryPage() {
   const [activeTab, setActiveTab] = useState('history'); // 'history', 'favorites', 'saved'
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Mock data - in real app, this would come from API/database
+  let [user,setUser] = useState(0);
+  const {api_url} = useContext(AuthContext);
+  const {token} = useContext(AuthContext);
+  useEffect(() => {
+    axios.get(api_url, 
+        {
+            headers: 
+            {
+                Authorization: `Bearer ${token != null ? token.access : null}`
+            }
+        }).then((response) =>{
+            if(response.status === 200){
+                setUser(response.data);
+            }
+        }
+        ).catch((response) =>{
+            console.error(response.data);
+            navigate('/login');
+        }
+        );
+}, []);
+  const [rawrecipes,setrawRecipes] = useState([])
+  useEffect(() => {axios.get('http://127.0.0.1:8000/cooking/userrecipe/', {headers: 
+    {
+        Authorization: `Bearer ${token != null ? token.access : null}`}
+    }).then((response) => {
+      console.log(response.data);
+      setrawRecipes(response.data);
+    }
+    )}, []);
+  
   const recipes = [
     {
       id: 1,
@@ -30,6 +62,14 @@ export default function HistoryPage() {
     },
     {
       id: 2,
+      name: "บะหมี่น้ำใสหมูกรอบ",
+      date: "2024-03-14",
+      spiciness: 40,
+      isFavorite: false,
+      isSaved: true
+    },
+    {
+      id: 3,
       name: "บะหมี่น้ำใสหมูกรอบ",
       date: "2024-03-14",
       spiciness: 40,

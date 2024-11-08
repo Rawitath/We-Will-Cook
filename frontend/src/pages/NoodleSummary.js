@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -14,40 +14,18 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import UserMenu from '../context/UserMenu';
+import axios from 'axios';
+import AuthContext from '../context/AuthContext';
 
 export default function NoodleSummary() {
     const navigate = useNavigate();
     const location = useLocation();
     const { isDarkMode } = useTheme();
     
-    const customization = location.state?.customization 
-    noodle_style = "แห้ง";
-    if (customization.selectedSoup != "แห้ง"){
-        noodle_style = customization.selectedSoup;
-    }
-    request = 
-    {
-        "noodle_style":noodle_style,
-        "noodle_type":customization.selectedNoodle,
-        "noodle_size":2,
-        "flavors":
-        {
-        "Sweetness Level": "75",
-        "Sourness Level": "25",
-        "Saltiness Level": "50",
-        "Spiciness Level": "100"
-        }
-    }
-    // || {
-    //   style: "น้ำ",
-    //   noodleType: "เส้นเล็ก",
-    //   soupType: "ต้มยำ",
-    //   spiciness: 75,
-    //   saltiness: 50,
-    //   sourness: 75,
-    //   sweetness: 25
-    // };
-
+    const customization = location.state?.customization;
+    const apidata = location.state?.apidata;
+    const {token} = useContext(AuthContext);
+    const [recipe, setRecipe] = useState([]);
     // Calculate recipe portions based on taste preferences
     // const calculateRecipe = () => {
     //   const basePortions = {
@@ -64,8 +42,17 @@ export default function NoodleSummary() {
 
     //   return basePortions;
     // };
-
-    const recipe = calculateRecipe();
+    console.log(apidata);
+    useEffect(() => {axios.post('http://127.0.0.1:8000/cooking/recipe/', apidata, 
+        {
+            headers: 
+            {
+                Authorization: `Bearer ${token != null ? token.access : null}`
+            }
+        }
+    ).then((response) => {
+        setRecipe(response.data);
+    })},[]);
 
     const handleSave = () => {
       alert("บันทึกสูตรเรียบร้อยแล้ว!");
@@ -196,9 +183,9 @@ export default function NoodleSummary() {
                                 วัตถุดิบหลัก
                             </h3>
                             <div className="space-y-2">
-                                <p>เส้น: {recipe.noodles}</p>
-                                <p>น้ำซุป: {recipe.soup_base}</p>
-                                <p>เนื้อสัตว์: {recipe.protein}</p>
+                                <p>เส้น: 100 กรัม</p>
+                                <p>น้ำซุป: 500 มล.</p>
+                                <p>เนื้อสัตว์: 80 กรัม</p>
                             </div>
                         </div>
 
@@ -210,10 +197,10 @@ export default function NoodleSummary() {
                                 เครื่องปรุง
                             </h3>
                             <div className="space-y-2">
-                                <p>น้ำปลา: {recipe.seasonings.fish_sauce}</p>
-                                <p>น้ำมะนาว: {recipe.seasonings.lime_juice}</p>
-                                <p>พริก: {recipe.seasonings.chili}</p>
-                                <p>น้ำตาล: {recipe.seasonings.sugar}</p>
+                                <p>น้ำปลา: {recipe['Fish sauce']} ช้อนโต๊ะ</p>
+                                <p>น้ำส้มสายชู: {recipe['Vinegar']} ช้อนโต๊ะ</p>
+                                <p>พริก: {recipe['Chili flakes']} ช้อนโต๊ะ</p>
+                                <p>น้ำตาล: {recipe['Sugar']} ช้อนโต๊ะ</p>
                             </div>
                         </div>
                     </div>

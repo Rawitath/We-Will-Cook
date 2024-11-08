@@ -52,16 +52,8 @@ export const AuthProvider = ({children}) => {
         });
     }
 
-    let resetpassword = (email) => {
-        axios.post(api_url+'request-reset-password/', 
-            {
-                'email':email
-            }
-    ).then((response) =>{
-        navigate('/');
-    }
-    );
-    }
+    
+    
     let changepassword = (password, resetToken) => {
         axios.put(api_url+'reset-password/',{
             'password':password
@@ -80,7 +72,6 @@ export const AuthProvider = ({children}) => {
         setToken:setToken,
         register:register,
         updatetoken:updatetoken,
-        resetpassword:resetpassword,
         changepassword:changepassword
     }
     useEffect(() => {

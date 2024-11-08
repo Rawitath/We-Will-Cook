@@ -28,6 +28,7 @@ class WWCRegisterView(APIView):
                 user = serializer.create(validated_data, True)
                 if user:
                     taste_pref = TastePrefModel()
+                    taste_pref.userid = user.userid
                     taste_pref.save()
                     from_email = settings.EMAIL_HOST_USER
                     to_email = [user.email]
@@ -88,7 +89,7 @@ class WWCRequestPasswordReset(APIView):
             reset_token = refresh.access_token
             reset_token.lifetime = timedelta(minutes=3)
             
-            reset_link = f"{settings.FRONTEND_URL}/reset/{reset_token}"
+            reset_link = f"{settings.FRONTEND_URL}/reset-password/{reset_token}"
             from_email = settings.EMAIL_HOST_USER
             to_email = [email]
             subject = f"Dear {user.username}, this is your password reset link."

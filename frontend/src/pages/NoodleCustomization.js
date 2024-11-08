@@ -81,7 +81,33 @@ const tastePreferences = [
   { id: 'sweet', name: 'ความหวาน', icon: '🍯', description: 'ระดับความหวาน' }
 ];
 // Helper function to prepare API data
-const prepareApiData = (noodleStyle, selectedNoodle, selectedSoup, tasteValues, noodleTypes, soupTypes) => {
+const prepareApiData = (noodleStyle, selectedNoodle, selectedSoup, bowlSize, tasteValues, noodleTypes, soupTypes) => {
+  const selectedNoodleType = noodleTypes.find(n => n.id === selectedNoodle);
+  const selectedSoupType = soupTypes.find(s => s.id === selectedSoup);
+  let noodle_style = "แห้ง";
+    if (selectedSoup != "แห้ง"){
+        noodle_style = selectedSoupType ? selectedSoupType.name : '';
+    }
+    const size_dict = {
+      "small":0.5,
+      "medium":1,
+      "large":1.5
+    };
+  return {
+    "noodle_style":noodle_style,
+    "noodle_type":selectedNoodleType ? selectedNoodleType.name : '',
+    "noodle_size":size_dict[bowlSize],
+    "flavors":
+    {
+    "Sweetness Level": tasteValues.sweet,
+    "Sourness Level": tasteValues.sour,
+    "Saltiness Level": tasteValues.salty,
+    "Spiciness Level": tasteValues.spicy
+    }
+    };
+};
+
+const prepareRawData = (noodleStyle, selectedNoodle, selectedSoup, tasteValues, noodleTypes, soupTypes) => {
   const selectedNoodleType = noodleTypes.find(n => n.id === selectedNoodle);
   const selectedSoupType = soupTypes.find(s => s.id === selectedSoup);
 
@@ -155,7 +181,7 @@ export default function NoodleCustomization() {
 
   // Navigation handler
   const handleNavigateToSummary = () => {
-    const data = prepareApiData(
+    const rawData = prepareRawData(
       noodleStyle,
       selectedNoodle,
       selectedSoup,
@@ -163,9 +189,19 @@ export default function NoodleCustomization() {
       noodleTypes,
       soupTypes
     );
+    const data = prepareApiData(
+      noodleStyle,
+      selectedNoodle,
+      selectedSoup,
+      selectedBowlSize,
+      tasteValues,
+      noodleTypes,
+      soupTypes
+    );
     navigate('/summary', { 
       state: { 
-        customization: data 
+        customization: rawData ,
+        apidata: data
       }
     });
   };

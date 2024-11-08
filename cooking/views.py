@@ -62,7 +62,7 @@ class UserRecipeView(APIView):
         response = {}
         for i in range(len(recipes)):
             serializer = RecipeSerializer(recipes[i])
-            response.update({i:serializer.data})
+            response.update(serializer.data)
         return Response(response, status=status.HTTP_200_OK)
     def delete(self, request):
         recipes = RecipeModel.objects.filter(userid=request.user.userid, pk=request.data.get('recipe_id'))

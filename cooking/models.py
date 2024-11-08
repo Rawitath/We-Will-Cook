@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 import json
 
 # Create your models here.
@@ -15,7 +16,7 @@ class CondimentModel(models.Model):
         return json.loads(self.tastes, ensure_ascii=False)
 
 class TastePrefModel(models.Model):
-    userid = models.UUIDField(unique=True, primary_key=True)
+    userid = models.UUIDField(null=True, unique=True)
     sweet_offset = models.FloatField(default=1)
     salty_offset = models.FloatField(default=1)
     sour_offset = models.FloatField(default=1)
@@ -25,7 +26,7 @@ class TastePrefModel(models.Model):
 import datetime
 
 class RecipeModel(models.Model):
-    userid = models.UUIDField()
+    userid = models.UUIDField(null=True)
     name = models.CharField(max_length=256)
     description = models.JSONField()
     condiments = models.JSONField()
