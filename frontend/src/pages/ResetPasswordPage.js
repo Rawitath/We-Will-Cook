@@ -13,7 +13,7 @@ export default function ResetPasswordPage() {
   let {api_url} = useContext(AuthContext);
   let [pass, setPass] = useState('');
   useEffect(() => {
-    axios.get('https://wwcsystem.vercel.app/authentication/reset-password/', 
+    axios.get('http://127.0.0.1:8000/authentication/reset-password/', 
         {
             headers: 
             {

@@ -50,7 +50,7 @@ print(get_random_secret_key())
 **7. เขียนไฟล์ .env ตามนี้**
 ```
 SECRET_KEY='((คีย์ที่ได้มา))'
-DEBUG=True
+DEBUG=False
 EMAIL_USE_TLS=True
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_HOST_USER='((Gmail สำหรับส่งข้อความ))'

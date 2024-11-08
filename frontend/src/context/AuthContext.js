@@ -7,7 +7,7 @@ const AuthContext = createContext();
 export default AuthContext;
 
 export const AuthProvider = ({children}) => {
-    const api_url = 'https://we-will-cook.vercel.app/authentication/';
+    const api_url = 'http://127.0.0.1:8000/authentication/';
     let [token, setToken] = useState(localStorage.getItem('auth_token') ? JSON.parse(localStorage.getItem('auth_token')) : null);
     const navigate = useNavigate();
     let [loading, setLoading] = useState([]);

@@ -52,7 +52,7 @@ export default function NoodleSummary() {
             }
         }
     }
-    useEffect(() => {axios.post('https://we-will-cook.vercel.app/cooking/recipe/', apidata, header
+    useEffect(() => {axios.post('http://127.0.0.1:8000/cooking/recipe/', apidata, header
     ).then((response) => {
         setRecipe(response.data);
     })},[]);

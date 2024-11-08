@@ -140,7 +140,7 @@ export default function CalibrationPage() {
     } else {
       setAnswers((prev) => {
         const finalAnswers = { ...prev, [questionId]: value };
-        axios.put('https://wwcsystem.vercel.app/vercel.app/cooking/calibrate/', finalAnswers, 
+        axios.put('http://127.0.0.1:8000/cooking/calibrate/', finalAnswers, 
           {
             headers: 
             {
