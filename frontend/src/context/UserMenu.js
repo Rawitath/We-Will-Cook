@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -16,14 +16,37 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import AuthContext from './AuthContext';
+import axios from 'axios';
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const menuRef = useRef();
   const { isDarkMode, toggleTheme } = useTheme();
+  const {token} = useContext(AuthContext)
+  const {setToken} = useContext(AuthContext)
+  const {api_url} = useContext(AuthContext)
+
+  let [user,setUser] = useState({"username":"เชฟคนเก่ง","email":"example@wewillcook.com"});
   
-  const user = JSON.parse(localStorage.getItem('user') || '{"name": "เชฟคนเก่ง", "email": "chef@email.com"}');
+  useEffect(() => {
+    axios.get(api_url, 
+        {
+            headers: 
+            {
+                Authorization: `Bearer ${token != null ? token.access : null}`
+            }
+        }).then((response) =>{
+            if(response.status === 200){
+                setUser(response.data);
+            }
+        }
+        ).catch((response) =>{
+            console.log('User not authenticated. Continuing in Guest mode');
+        }
+        );
+}, []);
 
   const menuItems = [
     {
@@ -49,10 +72,21 @@ export default function UserMenu() {
         { icon: <Share2 className="w-5 h-5" />, label: "แชร์ให้เพื่อน", action: () => navigate('/coming-soon') },
         { icon: <HelpCircle className="w-5 h-5" />, label: "วิธีใช้งาน", action: () => navigate('/coming-soon') },
         { icon: <LogOut className="w-5 h-5" />, label: "ออกจากระบบ", action: () => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          navigate('/login');
-          setIsOpen(false);
+          axios.post(api_url+'logout/',{
+            'refresh':token != null ? token.refresh : null,
+            'access':token != null ? token.access : null
+        },{
+            headers: 
+            {
+                Authorization: `Bearer ${token != null ? token.access : null}`
+            }
+        }
+          ).finally((response)=>{
+                localStorage.removeItem('auth_token');
+                setToken(null);
+                navigate('/login');
+                setIsOpen(false);
+          });
         }, className: "text-red-400" }
       ]
     }
@@ -81,10 +115,10 @@ export default function UserMenu() {
       >
         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center">
           <span className="text-white font-semibold">
-            {user.name.charAt(0)}
+            {user.username.charAt(0)}
           </span>
         </div>
-        <span className="font-medium">{user.name}</span>
+        <span className="font-medium">{user.username}</span>
       </motion.button>
 
       <AnimatePresence>
@@ -103,11 +137,11 @@ export default function UserMenu() {
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center">
                   <span className="text-xl font-bold text-white">
-                    {user.name.charAt(0)}
+                    {user.username.charAt(0)}
                   </span>
                 </div>
                 <div>
-                  <p className="font-medium">{user.name}</p>
+                  <p className="font-medium">{user.username}</p>
                   <p className="text-sm opacity-60">{user.email}</p>
                 </div>
               </div>

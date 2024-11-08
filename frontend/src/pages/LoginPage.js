@@ -1,10 +1,12 @@
 // src/pages/LoginPage.js
-import React, { useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { User, Lock, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import backgroundImage from '../assets/food-4k.jpg';
+import AuthContext from '../context/AuthContext';
+import axios from 'axios';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -18,34 +20,54 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  let [user,setUser] = useState(0);
+  const {api_url} = useContext(AuthContext);
+  const {token} = useContext(AuthContext);
+  const {setToken} = useContext(AuthContext);
+  useEffect(() => {
+    axios.get(api_url, 
+        {
+            headers: 
+            {
+                Authorization: `Bearer ${token != null ? token.access : null}`
+            }
+        }).then((response) =>{
+            if(response.status === 200){
+                setUser(response.data);
+            }
+        }
+        ).catch((response) =>{
+            console.error(response.data);
+        }
+        );
+}, []);
+  if(user != 0){
+    navigate('/');
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    try {
-      // Simulate API call with setTimeout
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock successful login
-      localStorage.setItem('token', 'mock-token');
-      localStorage.setItem('user', JSON.stringify({
-        name: 'เชฟคนเก่ง',
-        email: formData.email
-      }));
-
-      // Success animation before redirect
-      setIsLoading('success');
-      
-      // Redirect after success animation
-      setTimeout(() => {
-        navigate('/customize', { replace: true });
-      }, 1000);
-
-    } catch (err) {
-      setError('Login failed. Please try again.');
-      setIsLoading(false);
-    }
+    axios.post(api_url+'login/',{
+      "username": e.target.username.value,
+      "password": e.target.password.value
+    }).then((response)=>{
+      if(response.status === 200){
+          localStorage.setItem('auth_token', JSON.stringify(response.data));
+          setToken(response.data);
+          // Success animation before redirect
+          setIsLoading('success');
+          // Redirect after success animation
+          setTimeout(() => {
+          navigate('/');
+          }, 1000);
+      }
+    }).catch((response) => {
+        setError('Login failed. Please try again.');
+        setIsLoading(false);
+    });
   };
 
   const LoadingButton = () => {
@@ -101,6 +123,7 @@ export default function LoginPage() {
           <div className="mb-8 relative">
             <input
               type="username"
+              name='username'
               placeholder="Username"
               className="w-full h-[50px] bg-transparent border-2 border-white/20 rounded-full px-5 text-white placeholder-white outline-none focus:border-white/40 transition-colors"
               value={formData.username}
@@ -113,6 +136,7 @@ export default function LoginPage() {
           <div className="mb-8 relative">
             <input
               type="password"
+              name='password'
               placeholder="Password"
               className="w-full h-[50px] bg-transparent border-2 border-white/20 rounded-full px-5 text-white placeholder-white outline-none focus:border-white/40 transition-colors"
               value={formData.password}

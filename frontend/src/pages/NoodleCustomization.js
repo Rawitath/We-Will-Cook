@@ -81,7 +81,33 @@ const tastePreferences = [
   { id: 'sweet', name: 'ความหวาน', icon: '🍯', description: 'ระดับความหวาน' }
 ];
 // Helper function to prepare API data
-const prepareApiData = (noodleStyle, selectedNoodle, selectedSoup, tasteValues, noodleTypes, soupTypes) => {
+const prepareApiData = (noodleStyle, selectedNoodle, selectedSoup, bowlSize, tasteValues, noodleTypes, soupTypes) => {
+  const selectedNoodleType = noodleTypes.find(n => n.id === selectedNoodle);
+  const selectedSoupType = soupTypes.find(s => s.id === selectedSoup);
+  let noodle_style = "แห้ง";
+    if (noodleStyle != "dry"){
+        noodle_style = selectedSoupType ? selectedSoupType.name : '';
+    }
+    const size_dict = {
+      "small":0.5,
+      "medium":1,
+      "large":1.5
+    };
+  return {
+    "noodle_style":noodle_style,
+    "noodle_type":selectedNoodleType ? selectedNoodleType.name : '',
+    "noodle_size":size_dict[bowlSize],
+    "flavors":
+    {
+    "Sweetness Level": tasteValues.sweet,
+    "Sourness Level": tasteValues.sour,
+    "Saltiness Level": tasteValues.salty,
+    "Spiciness Level": tasteValues.spicy
+    }
+    };
+};
+
+const prepareRawData = (noodleStyle, selectedNoodle, selectedSoup, tasteValues, noodleTypes, soupTypes) => {
   const selectedNoodleType = noodleTypes.find(n => n.id === selectedNoodle);
   const selectedSoupType = soupTypes.find(s => s.id === selectedSoup);
 
@@ -155,7 +181,7 @@ export default function NoodleCustomization() {
 
   // Navigation handler
   const handleNavigateToSummary = () => {
-    const data = prepareApiData(
+    const rawData = prepareRawData(
       noodleStyle,
       selectedNoodle,
       selectedSoup,
@@ -163,9 +189,19 @@ export default function NoodleCustomization() {
       noodleTypes,
       soupTypes
     );
+    const data = prepareApiData(
+      noodleStyle,
+      selectedNoodle,
+      selectedSoup,
+      selectedBowlSize,
+      tasteValues,
+      noodleTypes,
+      soupTypes
+    );
     navigate('/summary', { 
       state: { 
-        customization: data 
+        customization: rawData ,
+        apidata: data
       }
     });
   };
@@ -188,6 +224,9 @@ export default function NoodleCustomization() {
       const randomSoup = soupTypes[Math.floor(Math.random() * soupTypes.length)].id;
       setTimeout(() => setSelectedSoup(randomSoup), 900);
     }
+
+    const randomBowl = bowlSizes[Math.floor(Math.random() * bowlSizes.length)].id;
+    setTimeout(() => setSelectedBowlSize(randomBowl), 1200);
 
     // Generate time-based taste preferences
     if (timeOfDay < 11) {
@@ -217,7 +256,7 @@ export default function NoodleCustomization() {
     }
 
     // Apply the preferences
-    setTimeout(() => setTasteValues(preferences), 1200);
+    setTimeout(() => setTasteValues(preferences), 1500);
 
     // Show recommendation message
     const messageElement = document.createElement('div');
