@@ -42,7 +42,7 @@ export default function HistoryPage() {
         }
         );
 }, []);
-  useEffect(() => {axios.get('http://127.0.0.1:8000/cooking/userrecipe/', {headers: 
+  useEffect(() => {axios.get('https://we-will-cook.vercel.app/cooking/userrecipe/', {headers: 
     {
         Authorization: `Bearer ${token != null ? token.access : null}`}
     }).then((response) => {
