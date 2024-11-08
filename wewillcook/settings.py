@@ -20,7 +20,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG') == 'True'
 FRONTEND_URL = 'http://localhost:3000'
 
-ALLOWED_HOSTS = []
+import socket
+ALLOWED_HOSTS = [socket.gethostbyname(socket.gethostname())]
 #endregion
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
